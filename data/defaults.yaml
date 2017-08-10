@@ -1,0 +1,166 @@
+---
+################################################################################
+# Default arguments for this Puppet module.
+################################################################################
+# Define a reusable hash alias for deep merge options
+deep_merge: &deep_merge
+  merge:
+    strategy: deep
+    knockout_prefix: '--'
+    merge_hash_arrays: true
+
+lookup_options:
+  postfix::master_processes:
+    <<: *deep_merge
+  postfix::global_parameters:
+    <<: *deep_merge
+  postfix::config_file_path_attributes:
+    <<: *deep_merge
+  postfix::config_file_defaults:
+    <<: *deep_merge
+
+# Ensure the package is at least installed
+postfix::package_ensure: present
+postfix::package_name: postfix
+
+# Ensure the service is enabled and running
+postfix::service_enabled: true
+postfix::service_ensure: running
+postfix::service_managed: true
+postfix::service_name: postfix
+
+# Default location and treatment of config files
+postfix::config_file_path: /etc/postfix
+postfix::purge_config_file_path: true
+postfix::config_file_path_attributes:
+  owner: root
+  group: root
+  mode: '0755'
+postfix::config_file_defaults:
+  owner: root
+  group: root
+  mode: '0644'
+
+# Default (vendor) postfix configuration
+postfix::master_processes:
+  smtp/inet:
+    private: n
+    chroot: n
+    command: smtpd
+  pickup/unix:
+    private: n
+    chroot: n
+    wakeup: 60
+    maxproc: 1
+    command: pickup
+  cleanup/unix:
+    private: n
+    chroot: n
+    maxproc: 0
+    command: cleanup
+  qmgr/unix:
+    private: n
+    chroot: n
+    wakeup: 300
+    maxproc: 1
+    command: qmgr
+  tlsmgr/unix:
+    chroot: n
+    wakeup: 1000?
+    maxproc: 1
+    command: tlsmgr
+  rewrite/unix:
+    chroot: n
+    command: trivial-rewrite
+  bounce/unix:
+    chroot: n
+    maxproc: 0
+    command: bounce
+  defer/unix:
+    chroot: n
+    maxproc: 0
+    command: bounce
+  trace/unix:
+    chroot: n
+    maxproc: 0
+    command: bounce
+  verify/unix:
+    chroot: n
+    maxproc: 1
+    command: verify
+  flush/unix:
+    private: n
+    chroot: n
+    wakeup: 1000?
+    maxproc: 0
+    command: flush
+  proxymap/unix:
+    chroot: n
+    command: proxymap
+  proxywrite/unix:
+    chroot: n
+    maxproc: 1
+    command: proxymap
+  smtp/unix:
+    chroot: n
+    command: smtp
+  relay/unix:
+    chroot: n
+    command: smtp
+  showq/unix:
+    private: n
+    chroot: n
+    command: showq
+  error/unix:
+    chroot: n
+    command: error
+  retry/unix:
+    chroot: n
+    command: error
+  discard/unix:
+    chroot: n
+    command: discard
+  local/unix:
+    unpriv: n
+    chroot: n
+    command: local
+  virtual/unix:
+    unpriv: n
+    chroot: n
+    command: virtual
+  lmtp/unix:
+    chroot: n
+    command: lmtp
+  anvil/unix:
+    chroot: n
+    maxproc: 1
+    command: anvil
+  scache/unix:
+    chroot: n
+    maxproc: 1
+    command: scache
+
+postfix::global_parameters:
+  queue_directory: /var/spool/postfix
+  command_directory: /usr/sbin
+  daemon_directory: /usr/libexec/postfix
+  data_directory: /var/lib/postfix
+  mail_owner: postfix
+  inet_interfaces: localhost
+  inet_protocols: all
+  mydestination: $myhostname, localhost.$mydomain, localhost
+  unknown_local_recipient_reject_code: 550
+  alias_maps: hash:/etc/aliases
+  alias_database: hash:/etc/aliases
+  debug_peer_level: 2
+  debugger_command: |1
+    PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
+    ddd $daemon_directory/$process_name $process_id & sleep 5
+  sendmail_path: /usr/sbin/sendmail.postfix
+  newaliases_path: /usr/bin/newaliases.postfix
+  mailq_path: /usr/bin/mailq.postfix
+  setgid_group: postdrop
+  html_directory: no
+  manpage_directory: /usr/share/man
+
+# vim: tabstop=2:softtabstop=2:shiftwidth=2:expandtab:ai

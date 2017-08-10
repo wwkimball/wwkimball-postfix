@@ -1,0 +1,30 @@
+################################################################################
+#                     THIS FILE IS UNDER PUPPET CONTROL!                       #
+################################################################################
+<%
+hashName = 'postfix::master_processes'
+config   = scope[hashName]
+if @config and !@config.empty? and @config.is_a?(Hash)
+  @config.sort.each { |key, attrs|
+    if key =~ /^([a-z]+)\/(inet|unix|fifo|pass)$/
+      srv_name    = $1
+      srv_type    = $2
+      srv_private = attrs.has_key?('private') ? attrs['private'] : '-'
+      srv_unpriv  = attrs.has_key?('unpriv') ? attrs['unpriv'] : '-'
+      srv_chroot  = attrs.has_key?('chroot') ? attrs['chroot'] : '-'
+      srv_wakeup  = attrs.has_key?('wakeup') ? attrs['wakeup'] : '-'
+      srv_maxproc = attrs.has_key?('maxproc') ? attrs['maxproc'] : '-'
+      srv_command = attrs['command']
+      %><%= "#{srv_name} #{srv_type} #{srv_private} #{srv_unpriv} #{srv_chroot} #{srv_wakeup} #{srv_maxproc} #{srv_command}\n" %><%
+    else
+      %><%= "# WARNING:  Ignoring malformed key, #{key}\n" %><%
+    end
+  }
+else
+  %>
+#
+# WARNING:
+# <%= hashName %> is missing or of an incorrect data type.
+#
+  <%
+end %>
