@@ -7,16 +7,18 @@
 class postfix::config {
   # Ensure the configuration directory exists
   file { $postfix::config_file_path:
-    ensure => directory,
-    purge  => $postfix::purge_config_file_path,
-    *      => $postfix::config_file_path_attributes,
+    ensure       => directory,
+    purge        => $postfix::purge_config_file_path,
+    recurse      => $postfix::purge_config_file_path,
+    recurselimit => 1,
+    *            => $postfix::config_file_path_attributes,
   }
 
   # Manage master.cf and main.cf
   file {
     default:
       ensure => file,
-      *      => $postfix::config_file_defaults,;
+      *      => $postfix::config_file_attributes,;
 
     "${postfix::config_file_path}/master.cf":
       content => template("${module_name}/master-processes.erb"),;
@@ -30,10 +32,20 @@ class postfix::config {
     file {
       default:
         ensure => file,
-        *      => $postfix::config_file_defaults,;
+        *      => $postfix::config_file_attributes,;
   
       "${postfix::config_file_path}/${file}":
         content => template("${module_name}/config-file.erb"),;
+    }
+  }
+  pick($postfix::check_files, {}).each | String $file, Array[String] $rules, | {
+    file {
+      default:
+        ensure => file,
+        *      => $postfix::config_file_attributes,;
+  
+      "${postfix::config_file_path}/${file}":
+        content => template("${module_name}/check-file.erb"),;
     }
   }
 }

@@ -2,17 +2,15 @@
 #                     THIS FILE IS UNDER PUPPET CONTROL!                       #
 ################################################################################
 <%
-hashName = 'postfix::global_parameters'
-config   = scope[hashName]
-if config and !config.empty? and config.is_a?(Hash)
-  config.sort.each { |key, value|
-    %><%= "#{key} = #{value}\n" %><%
+if @rules and !@rules.empty? and @rules.kind_of?(Array)
+  @rules.each { |rule|
+    %><%= "#{rule}\n" %><%
   }
 else
   %>
 #
 # WARNING:
-# <%= hashName %> is missing or of an incorrect data type.
+# Check rule data is missing or of an incorrect data type.
 #
   <%
 end %>

@@ -1,8 +1,14 @@
 # Class: postfix
 #
-# This module manages postfix.
+# This module fully manages postfix.
 #
-# @param config_file_defaults Set of attributes to apply to all configuration
+# @param check_files Similar to config_files, this Hash represents a set of
+#  *_checks files that Postfix can be configured to consume for various check
+#  operations, like header_checks, body_checks, and such.  Unlike config_files
+#  however, these are not key-value configurations.  Instead, these are
+#  populated as Arrays of Strings, with each element being a complete check
+#  rule.
+# @param config_file_attributes Set of attributes to apply to all configuration
 #  files that are managed by this module.  These are file resource attributes,
 #  per: https://docs.puppet.com/puppet/latest/types/file.html#file-attributes
 # @param config_file_path Fully-qualified path to where the Postfix
@@ -46,22 +52,22 @@
 #    - postfix
 #
 class postfix(
-  Hash[String[4], Any]       $config_file_defaults,
+  Hash[String[4], Any]       $config_file_attributes,
   String[3]                  $config_file_path,
   Hash[String[4], Any]       $config_file_path_attributes,
   Hash[
     Pattern[/^[A-Za-z0-9_]+$/],
-    String
+    Variant[String, Integer]
   ]                          $global_parameters,
   Hash[
     Pattern[/^[a-z]+\/(inet|unix|fifo|pass)$/],
     Struct[{
-      command           => String[2],
-      Optional[private] => Enum[y, n],
-      Optional[unpriv]  => Enum[y, n],
-      Optional[chroot]  => Enum[y, n],
-      Optional[wakeup]  => Pattern[/^(0|[1-9][0-9]*)\??$/],
-      Optional[maxproc] => Integer
+      command             => String[2],
+      Optional['private'] => Enum['y', 'n'],
+      Optional['unpriv']  => Enum['y', 'n'],
+      Optional['chroot']  => Enum['y', 'n'],
+      Optional['wakeup']  => Variant[Pattern[/^(0|[1-9][0-9]*)\??$/], Integer],
+      Optional['maxproc'] => Integer,
   }]]                        $master_processes,
   String                     $package_ensure,
   String[2]                  $package_name,
@@ -72,6 +78,10 @@ class postfix(
   String[2]                  $service_name,
   Optional[Hash[
     String[2],
+    Array[String[2]]
+  ]]                         $check_files  = undef,
+  Optional[Hash[
+    String[2],
     Hash[
       Pattern[/^[A-Za-z0-9_]+$/],
       Any
@@ -79,7 +89,7 @@ class postfix(
 ) {
   class { '::postfix::package': }
   -> class { '::postfix::config': }
-  -> class { '::postfix::service': }
+  ~> class { '::postfix::service': }
   -> Class['postfix']
 }
 # vim: tabstop=2:softtabstop=2:shiftwidth=2:expandtab:ai

@@ -4,8 +4,8 @@
 <%
 hashName = 'postfix::master_processes'
 config   = scope[hashName]
-if @config and !@config.empty? and @config.is_a?(Hash)
-  @config.sort.each { |key, attrs|
+if config and !config.empty? and config.is_a?(Hash)
+  config.sort.each { |key, attrs|
     if key =~ /^([a-z]+)\/(inet|unix|fifo|pass)$/
       srv_name    = $1
       srv_type    = $2
