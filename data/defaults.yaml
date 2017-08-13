@@ -10,15 +10,17 @@ deep_merge: &deep_merge
     merge_hash_arrays: true
 
 lookup_options:
-  postfix::master_processes:
+  postfix::check_files:
     <<: *deep_merge
-  postfix::global_parameters:
+  postfix::config_file_attributes:
     <<: *deep_merge
   postfix::config_file_path_attributes:
     <<: *deep_merge
-  postfix::config_file_defaults:
-    <<: *deep_merge
   postfix::config_files:
+    <<: *deep_merge
+  postfix::global_parameters:
+    <<: *deep_merge
+  postfix::master_processes:
     <<: *deep_merge
 
 # Ensure the package is at least installed
