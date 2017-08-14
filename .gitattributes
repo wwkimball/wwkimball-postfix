@@ -1,0 +1,8 @@
+*.rb     linguist-language=Ruby
+*.erb    linguist-language=Ruby
+*.pp     linguist-language=Puppet
+*.yaml   linguist-language=YAML
+*.json   linguist-language=JSON
+.project linguist-language=XML
+Rakefile linguist-language=Ruby
+
