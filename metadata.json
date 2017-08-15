@@ -20,7 +20,7 @@
     { "name": "puppet", "version_requirement": ">=5.0.0" }
   ],
   "source": "ssh://git@bitbucket.org:kimballstuff/wkimball-postfix.git",
-  "summary": "Manages postfix",
+  "summary": "Fully manages postfix",
   "tags": [],
   "version": "0.1.0"
 }
