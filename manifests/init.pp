@@ -1,52 +1,90 @@
 # Class: postfix
 #
-# This module fully manages postfix.
+# This module fully manages postfix.  It can install and uninstall postifx,
+# configure or delete every vendor and custom configuration file, and optionally
+# manage the postfix service.
 #
-# @param check_files Similar to config_files, this Hash represents a set of
-#  *_checks files that Postfix can be configured to consume for various check
-#  operations, like header_checks, body_checks, and such.  Unlike config_files
-#  however, these are not key-value configurations.  Instead, these are
-#  populated as Arrays of Strings, with each element being a complete check
-#  rule.
+# @summary Fully manages postfix.
+#
+# @param check_files Set of configuration files that serve as local lookup
+#  tables for postfix *_check rules (e.g.: header_checks, body_checks, and
+#  such).  The structure of this Hash is as follows:
+#    <FILENAME>:
+#      - <CHECK_RULE>
+#      - ...
+#    ...
+#  Default is found in the data directory of this module's source and is applied
+#  per this module's hiera.yaml.
 # @param config_file_attributes Set of attributes to apply to all configuration
 #  files that are managed by this module.  These are file resource attributes,
 #  per: https://docs.puppet.com/puppet/latest/types/file.html#file-attributes
+#  Default is found in the data directory of this module's source and is applied
+#  per this module's hiera.yaml.
 # @param config_file_path Fully-qualified path to where the Postfix
-#  configuration file -- and all config_files -- are stored.
+#  configuration files are stored.  Default is found in the data directory of
+#  this module's source and is applied per this module's hiera.yaml.
+# @param config_file_path_attributes Puppet attributes applied to
+#  `config_file_path`.  Default is found in the data directory of this module's
+#  source and is applied per this module's hiera.yaml.  Default is found in the
+#  data directory of this module's source and is applied per this module's
+#  hiera.yaml.
 # @param config_files Excluding master.cf (controlled via master_processes) and
 #  main.cf (controlled via global_parameters), this is a set of additional
 #  configuration files for Postfix.  Such files are typically lookup
 #  configurations for external services like MySQL, PostgreSQL, and such.  This
 #  Hash has structure:
-#  configuration-file-name-relative-to-config_file_path-N:
-#    key1: value1
-#    keyN: valueN
+#    <FILENAME>:
+#      <KEY>: <VALUE>
+#      ...
+#    ...
+#  Default is found in the data directory of this module's source and is applied
+#  per this module's hiera.yaml.
 # @param global_parameters Full content of main.cf as a Hash with structure:
-#  key: value
+#    <KEY>: <VALUE>
+#    ...
+#  Default is found in the data directory of this module's source and is applied
+#  per this module's hiera.yaml.
 # @param master_processes Full content of master.cf as a Hash with structure:
-#  service-name/service-type:
-#    command:  command name and its arguments
-#    private:  OPTIONAL, y or n
-#    unpriv:  OPTIONAL, y or n
-#    chroot:  OPTIONAL, y or n
-#    wakeup:  OPTIONAL, any positive number; may end with ?
-#    maxproc:  OPTIONAL, any positive number
-# @param package_ensure Version or state of the postfix package.
-# @param package_name Name of the Postfix package to manage.
-# @param purge_config_file_path Indicates whether to delete any configuration
-#  files that sneak into config_file_path that are not Puppet-managed.
-# @param service_enable Indicates whether the managed service should start at
-#  boot, when service_managed is enabled.
-# @param service_ensure The running state of the managed service, when
-#  service_managed is enabled. 
-# @param service_managed Indicates whether to manage the postfix service.
-# @param service_name Name of the service to manage, when service_managed is
-#  enabled.
+#    <service-name/service-type>:
+#      command:  <command name and its arguments>
+#      private:  <OPTIONAL, y or n>
+#      unpriv:  <OPTIONAL, y or n>
+#      chroot:  <OPTIONAL, y or n>
+#      wakeup:  <OPTIONAL, any positive number; may end with ?>
+#      maxproc:  <OPTIONAL, any positive number>
+#    ...
+#  Default is found in the data directory of this module's source and is applied
+#  per this module's hiera.yaml.
+# @param package_ensure Precise version number of the postfix package to install
+#  (and lock-in, blocking up/downgrades) or any Puppet token value to more
+#  generically control the installed package version or to uninstall postfix,
+#  optionally purging all postfix configuration files.  By default, this package
+#  is merely installed without any up/downgrade management.
+# @param package_name Name of the primary postfix package to manage, per your
+#  operating system and distribution.  Default is found in the data directory of
+#  this module's source and is applied per this module's hiera.yaml.
+# @param purge_config_file_path Indicates whether to ensure that only Puppet-
+#  managed configuration files exist in `config_file_path`.  Default is found in
+#  the data directory of this module's source and is applied per this module's
+#  hiera.yaml.
+# @param service_enable Indicates whether the postfix service will self-start
+#  on node restart.  Default is found in the data directory of this module's
+#  source and is applied per this module's hiera.yaml.
+# @param service_ensure One of running (postfix service is kept on) or stopped
+#  (postfix service is kept off).  Default is found in the data directory of
+#  this module's source and is applied per this module's hiera.yaml.
+# @param service_managed Indicates whether Puppet will manage the postfix
+#  service.  All other service_* parameters are ignored when this is disabled.
+#  Default is found in the data directory of this module's source and is applied
+#  per this module's hiera.yaml.
+# @param service_name Name of the service to manage when `service_managed` is
+#  enabled.  Default is found in the data directory of this module's source and
+#  is applied per this module's hiera.yaml.
 #
 # @see http://www.postfix.org/master.5.html
 # @see http://www.postfix.org/postconf.5.html
 #
-# @example
+# @example Minimum configuration, sufficient for vendor-specified defaults
 #  ---
 #  classes:
 #    - postfix
@@ -92,4 +130,4 @@ class postfix(
   ~> class { '::postfix::service': }
   -> Class['postfix']
 }
-# vim: tabstop=2:softtabstop=2:shiftwidth=2:expandtab:ai
+# vim: syntax=puppet:tabstop=2:softtabstop=2:shiftwidth=2:expandtab:ai

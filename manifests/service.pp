@@ -1,17 +1,32 @@
 # Class: postfix::service
 #
-# This subclass manages the postfix service.
+# This subclass optionally manages the postfix service.  The name of the managed
+# service can be customized if necessary and service management can be entirely
+# disabled.
 #
-# @example
+# @summary Optionally manages the postfix service by any name.
+#
+# @example Default; service is managed and always running
 #  ---
 #  classes:
 #    - postfix
-#  postfix::service_ensure: running
-#  postfix::service_enable: true
-#  postfix::service_managed: true
+#
+# @example Disable service management (e.g.:  for containers)
+#  ---
+#  classes:
+#    - postfix
+#  postfix::service_managed: false
+#
+# @example Stop the service
+#  ---
+#  classes:
+#    - postfix
+#  postfix::service_ensure: stopped
 #
 class postfix::service {
-  if $postfix::service_managed {
+  if $postfix::service_managed
+    and ! ($postfix::package_ensure in ['absent', 'purged'])
+  {
     service { 'postfix':
       ensure    => $postfix::service_ensure,
       name      => $postfix::service_name,
@@ -20,4 +35,4 @@ class postfix::service {
     }
   }
 }
-# vim: tabstop=2:softtabstop=2:shiftwidth=2:expandtab:ai
+# vim: syntax=puppet:tabstop=2:softtabstop=2:shiftwidth=2:expandtab:ai
