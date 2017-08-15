@@ -2,11 +2,15 @@
 ################################################################################
 # Default arguments for this Puppet module.
 ################################################################################
+# Define reusable values
+aliases:
+  - &knockout_prefix --
+
 # Define a reusable hash alias for deep merge options
 deep_merge: &deep_merge
   merge:
     strategy: deep
-    knockout_prefix: '--'
+    knockout_prefix: *knockout_prefix
     merge_hash_arrays: true
 
 lookup_options:
@@ -35,7 +39,6 @@ postfix::service_name: postfix
 
 # Default location and treatment of config files
 postfix::config_file_path: /etc/postfix
-postfix::purge_config_file_path: true
 postfix::config_file_path_attributes:
   owner: root
   group: root
@@ -44,6 +47,8 @@ postfix::config_file_attributes:
   owner: root
   group: root
   mode: '0644'
+postfix::config_hash_key_knockout_prefix: *knockout_prefix
+postfix::purge_config_file_path: true
 
 # Default (vendor) postfix configuration
 postfix::master_processes:

@@ -39,6 +39,11 @@
 #    ...
 #  Default is found in the data directory of this module's source and is applied
 #  per this module's hiera.yaml.
+# @param config_hash_key_knockout_prefix String of characters which, when
+#  present as a prefix to any supporting Hash key, will cause that entire key
+#  and its value to be removed from the resulting rendered configuration file.
+#  Default is found in the data directory of this module's source and is applied
+#  per this module's hiera.yaml.
 # @param global_parameters Full content of main.cf as a Hash with structure:
 #    <KEY>: <VALUE>
 #    ...
@@ -93,6 +98,7 @@ class postfix(
   Hash[String[4], Any]       $config_file_attributes,
   String[3]                  $config_file_path,
   Hash[String[4], Any]       $config_file_path_attributes,
+  String                     $config_hash_key_knockout_prefix,
   Hash[
     Pattern[/^[A-Za-z0-9_]+$/],
     Variant[String, Integer]

@@ -2,8 +2,25 @@
 #                     THIS FILE IS UNDER PUPPET CONTROL!                       #
 ################################################################################
 <%
+# Removes keys from a source Hash for which a matching knock-out key exists.
+# @knockout_prefix controls the prefix String to use.  When nil or empty, no
+# knock-outs occur.
+#
+# @summary Removes keys from a source Hash for which a matching knock-out key
+#  exists.
+# @param data [Hash] The source data with both normal and knock-out keys.
+# @return [Hash] The culled data.
+def remove_knocked_out_keys(data)
+  return data if @knockout_prefix.nil? or @knockout_prefix.empty?
+  knockout_keys = data.select{|k,v| k.to_s.start_with?(@knockout_prefix) }
+  data.delete_if{|k,v|
+    knockout_keys.include?(k) or knockout_keys.include?("#{@knockout_prefix}#{k}")
+  }
+  data
+end
+
 if @config and !@config.empty? and @config.is_a?(Hash)
-  @config.sort.each { |key, value|
+  remove_knocked_out_keys(@config).each { |key, value|
     %><%= "#{key} = #{value}\n" %><%
   }
 else

@@ -87,6 +87,8 @@ class postfix::config {
       force   => true,
     }
   } else {
+    $knockout_prefix = $postfix::config_hash_key_knockout_prefix
+
     # Ensure the configuration directory exists
     file { $postfix::config_file_path:
       ensure       => directory,
@@ -95,27 +97,27 @@ class postfix::config {
       recurselimit => 1,
       *            => $postfix::config_file_path_attributes,
     }
-  
+
     # Manage master.cf and main.cf
     file {
       default:
         ensure => file,
         *      => $postfix::config_file_attributes,;
-  
+
       "${postfix::config_file_path}/master.cf":
         content => template("${module_name}/master-processes.erb"),;
-  
+
       "${postfix::config_file_path}/main.cf":
         content => template("${module_name}/global-parameters.erb"),;
     }
-  
+
     # Manage all auxilliary configuration files
     pick($postfix::config_files, {}).each | String $file, Hash $config, | {
       file {
         default:
           ensure => file,
           *      => $postfix::config_file_attributes,;
-  
+
         "${postfix::config_file_path}/${file}":
           content => template("${module_name}/config-file.erb"),;
       }
@@ -128,7 +130,7 @@ class postfix::config {
         default:
           ensure => file,
           *      => $postfix::config_file_attributes,;
-  
+
         "${postfix::config_file_path}/${file}":
           content => template("${module_name}/check-file.erb"),;
       }
