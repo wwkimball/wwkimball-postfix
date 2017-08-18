@@ -9,10 +9,12 @@
 # @param check_files Set of configuration files that serve as local lookup
 #  tables for postfix *_check rules (e.g.: header_checks, body_checks, and
 #  such).  The structure of this Hash is as follows:
-#    <FILENAME>:
-#      - <CHECK_RULE>
-#      - ...
-#    ...
+#  ```<br>
+#    FILENAME:<br>
+#      - CHECK_RULE<br>
+#      - ...<br>
+#    ...<br>
+#  ```
 #  Default is found in the data directory of this module's source and is applied
 #  per this module's hiera.yaml.
 # @param config_file_attributes Set of attributes to apply to all configuration
@@ -33,10 +35,12 @@
 #  configuration files for Postfix.  Such files are typically lookup
 #  configurations for external services like MySQL, PostgreSQL, and such.  This
 #  Hash has structure:
-#    <FILENAME>:
-#      <KEY>: <VALUE>
-#      ...
-#    ...
+#  ```<br>
+#    FILENAME:<br>
+#      KEY: VALUE<br>
+#      ...<br>
+#    ...<br>
+#  ```
 #  Default is found in the data directory of this module's source and is applied
 #  per this module's hiera.yaml.
 # @param config_hash_key_knockout_prefix String of characters which, when
@@ -45,19 +49,23 @@
 #  Default is found in the data directory of this module's source and is applied
 #  per this module's hiera.yaml.
 # @param global_parameters Full content of main.cf as a Hash with structure:
-#    <KEY>: <VALUE>
-#    ...
+#  ```<br>
+#    KEY: VALUE<br>
+#    ...<br>
+#  ```
 #  Default is found in the data directory of this module's source and is applied
 #  per this module's hiera.yaml.
 # @param master_processes Full content of master.cf as a Hash with structure:
-#    <service-name/service-type>:
-#      command:  <command name and its arguments>
-#      private:  <OPTIONAL, y or n>
-#      unpriv:  <OPTIONAL, y or n>
-#      chroot:  <OPTIONAL, y or n>
-#      wakeup:  <OPTIONAL, any positive number; may end with ?>
-#      maxproc:  <OPTIONAL, any positive number>
-#    ...
+#  ```<br>
+#    service-name/service-type:<br>
+#      command:  command name and its arguments<br>
+#      private:  OPTIONAL, y or n<br>
+#      unpriv:  OPTIONAL, y or n<br>
+#      chroot:  OPTIONAL, y or n<br>
+#      wakeup:  OPTIONAL, any positive number; may end with ?<br>
+#      maxproc:  OPTIONAL, any positive number<br>
+#    ...<br>
+#  ```
 #  Default is found in the data directory of this module's source and is applied
 #  per this module's hiera.yaml.
 # @param package_ensure Precise version number of the postfix package to install

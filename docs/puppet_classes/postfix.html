@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Puppet Class: postfix
+  
+    &mdash; Documentation by YARD 0.9.9
+  
+</title>
+
+  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "puppet_classes::postfix";
+  relpath = '../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../puppet_class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../_index.html">Index (p)</a> &raquo;
+    <span class='title'><span class='object_link'>Puppet Classes</span></span>
+     &raquo; 
+    <span class="title">postfix</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="puppet_class_list_link"
+        href="../puppet_class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Puppet Class: postfix</h1>
+<div class="box_info">
+  
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>
+      manifests/init.pp
+    </dd>
+  </dl>
+</div>
+
+  <h2>Summary</h2>
+  Fully manages postfix.
+
+<h2>Overview</h2>
+<div class="docstring">
+  <div class="discussion">
+    
+<p>Class: postfix</p>
+
+<p>This module fully manages postfix. It can install and uninstall postifx,
+configure or delete every vendor and custom configuration file, and
+optionally manage the postfix service.</p>
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <p class="tag_title">Examples:</p>
+    
+      
+        <p class="example_title"><div class='inline'>
+<p>Minimum configuration, sufficient for vendor-specified defaults</p>
+</div></p>
+      
+      <pre class="example code"><code>---
+classes:
+  - postfix</code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>check_files</span>
+      
+      
+        <span class='type'>(<tt>Optional[Hash[
+    String[2],
+    Array[String[2]]
+  ]]</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>undef</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Set of configuration files that serve as local lookup tables for postfix
+*_check rules (e.g.: header_checks, body_checks, and such). The structure
+of this Hash is as follows: <code><br>   FILENAME:<br>     - CHECK_RULE<br>
+- ...<br>   ...<br> </code> Default is found in the data directory of this
+module&#39;s source and is applied per this module&#39;s hiera.yaml.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>config_file_attributes</span>
+      
+      
+        <span class='type'>(<tt>Hash[String[4], Any]</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Set of attributes to apply to all configuration files that are managed by
+this module. These are file resource attributes, per: <a
+href="https://docs.puppet.com/puppet/latest/types/file.html#file-attributes">docs.puppet.com/puppet/latest/types/file.html#file-attributes</a>
+Default is found in the data directory of this module&#39;s source and is
+applied per this module&#39;s hiera.yaml.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>config_file_path</span>
+      
+      
+        <span class='type'>(<tt>String[3]</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Fully-qualified path to where the Postfix configuration files are stored.
+Default is found in the data directory of this module&#39;s source and is
+applied per this module&#39;s hiera.yaml.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>config_file_path_attributes</span>
+      
+      
+        <span class='type'>(<tt>Hash[String[4], Any]</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Puppet attributes applied to <code>config_file_path</code>. Default is
+found in the data directory of this module&#39;s source and is applied per
+this module&#39;s hiera.yaml. Default is found in the data directory of
+this module&#39;s source and is applied per this module&#39;s hiera.yaml.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>config_files</span>
+      
+      
+        <span class='type'>(<tt>Optional[Hash[
+    String[2],
+    Hash[
+      Pattern[/^[A-Za-z0-9_]+$/],
+      Any
+  ]]]</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>undef</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Excluding master.cf (controlled via master_processes) and main.cf
+(controlled via global_parameters), this is a set of additional
+configuration files for Postfix. Such files are typically lookup
+configurations for external services like MySQL, PostgreSQL, and such. This
+Hash has structure: <code><br>   FILENAME:<br>     KEY: VALUE<br>    
+...<br>   ...<br> </code> Default is found in the data directory of this
+module&#39;s source and is applied per this module&#39;s hiera.yaml.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>config_hash_key_knockout_prefix</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>String of characters which, when present as a prefix to any supporting Hash
+key, will cause that entire key and its value to be removed from the
+resulting rendered configuration file. Default is found in the data
+directory of this module&#39;s source and is applied per this module&#39;s
+hiera.yaml.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>global_parameters</span>
+      
+      
+        <span class='type'>(<tt>Hash[
+    Pattern[/^[A-Za-z0-9_]+$/],
+    Variant[String, Integer]
+  ]</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Full content of main.cf as a Hash with structure: <code><br>   KEY:
+VALUE<br>   ...<br> </code> Default is found in the data directory of this
+module&#39;s source and is applied per this module&#39;s hiera.yaml.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>master_processes</span>
+      
+      
+        <span class='type'>(<tt>Hash[
+    Pattern[/^[a-z]+\/(inet|unix|fifo|pass)$/],
+    Struct[{
+      command             =&gt; String[2],
+      Optional['private'] =&gt; Enum['y', 'n'],
+      Optional['unpriv']  =&gt; Enum['y', 'n'],
+      Optional['chroot']  =&gt; Enum['y', 'n'],
+      Optional['wakeup']  =&gt; Variant[Pattern[/^(0|[1-9][0-9]*)\??$/], Integer],
+      Optional['maxproc'] =&gt; Integer,
+  }]]</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Full content of master.cf as a Hash with structure: <code><br>  
+service-name/service-type:<br>     command:  command name and its
+arguments<br>     private:  OPTIONAL, y or n<br>     unpriv:  OPTIONAL, y
+or n<br>     chroot:  OPTIONAL, y or n<br>     wakeup:  OPTIONAL, any
+positive number; may end with ?<br>     maxproc:  OPTIONAL, any positive
+number<br>   ...<br> </code> Default is found in the data directory of this
+module&#39;s source and is applied per this module&#39;s hiera.yaml.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>package_ensure</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Precise version number of the postfix package to install (and lock-in,
+blocking up/downgrades) or any Puppet token value to more generically
+control the installed package version or to uninstall postfix, optionally
+purging all postfix configuration files. By default, this package is merely
+installed without any up/downgrade management.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>package_name</span>
+      
+      
+        <span class='type'>(<tt>String[2]</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Name of the primary postfix package to manage, per your operating system
+and distribution. Default is found in the data directory of this
+module&#39;s source and is applied per this module&#39;s hiera.yaml.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>purge_config_file_path</span>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Indicates whether to ensure that only Puppet- managed configuration files
+exist in <code>config_file_path</code>. Default is found in the data
+directory of this module&#39;s source and is applied per this module&#39;s
+hiera.yaml.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>service_enable</span>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Indicates whether the postfix service will self-start on node restart.
+Default is found in the data directory of this module&#39;s source and is
+applied per this module&#39;s hiera.yaml.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>service_ensure</span>
+      
+      
+        <span class='type'>(<tt>Enum[running, stopped]</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>One of running (postfix service is kept on) or stopped (postfix service is
+kept off). Default is found in the data directory of this module&#39;s
+source and is applied per this module&#39;s hiera.yaml.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>service_managed</span>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Indicates whether Puppet will manage the postfix service. All other
+service_* parameters are ignored when this is disabled. Default is found in
+the data directory of this module&#39;s source and is applied per this
+module&#39;s hiera.yaml.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>service_name</span>
+      
+      
+        <span class='type'>(<tt>String[2]</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Name of the service to manage when <code>service_managed</code> is enabled.
+Default is found in the data directory of this module&#39;s source and is
+applied per this module&#39;s hiera.yaml.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><a href="http://www.postfix.org/master.5.html" target="_parent" title="http://www.postfix.org/master.5.html">http://www.postfix.org/master.5.html</a></li>
+    
+      <li><a href="http://www.postfix.org/postconf.5.html" target="_parent" title="http://www.postfix.org/postconf.5.html">http://www.postfix.org/postconf.5.html</a></li>
+    
+  </ul>
+
+</div><div class="method_details_list">
+  <table class="source_code">
+    <tr>
+      <td>
+        <pre class="lines">
+
+
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146</pre>
+      </td>
+      <td>
+        <pre class="code"><span class="info file"># File 'manifests/init.pp', line 105</span>
+
+class postfix(
+  Hash[String[4], Any]       $config_file_attributes,
+  String[3]                  $config_file_path,
+  Hash[String[4], Any]       $config_file_path_attributes,
+  String                     $config_hash_key_knockout_prefix,
+  Hash[
+    Pattern[/^[A-Za-z0-9_]+$/],
+    Variant[String, Integer]
+  ]                          $global_parameters,
+  Hash[
+    Pattern[/^[a-z]+\/(inet|unix|fifo|pass)$/],
+    Struct[{
+      command             =&gt; String[2],
+      Optional[&#39;private&#39;] =&gt; Enum[&#39;y&#39;, &#39;n&#39;],
+      Optional[&#39;unpriv&#39;]  =&gt; Enum[&#39;y&#39;, &#39;n&#39;],
+      Optional[&#39;chroot&#39;]  =&gt; Enum[&#39;y&#39;, &#39;n&#39;],
+      Optional[&#39;wakeup&#39;]  =&gt; Variant[Pattern[/^(0|[1-9][0-9]*)\??$/], Integer],
+      Optional[&#39;maxproc&#39;] =&gt; Integer,
+  }]]                        $master_processes,
+  String                     $package_ensure,
+  String[2]                  $package_name,
+  Boolean                    $purge_config_file_path,
+  Boolean                    $service_enable,
+  Enum[running, stopped]     $service_ensure,
+  Boolean                    $service_managed,
+  String[2]                  $service_name,
+  Optional[Hash[
+    String[2],
+    Array[String[2]]
+  ]]                         $check_files  = undef,
+  Optional[Hash[
+    String[2],
+    Hash[
+      Pattern[/^[A-Za-z0-9_]+$/],
+      Any
+  ]]]                        $config_files = undef,
+) {
+  class { &#39;::postfix::package&#39;: }
+  -&gt; class { &#39;::postfix::config&#39;: }
+  ~&gt; class { &#39;::postfix::service&#39;: }
+  -&gt; Class[&#39;postfix&#39;]
+}</pre>
+      </td>
+    </tr>
+  </table>
+</div>
+</div>
+
+      <div id="footer">
+  Generated on Fri Aug 18 03:41:36 2017 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.9 (ruby-2.4.1).
+</div>
+
+    </div>
+  </body>
+</html>

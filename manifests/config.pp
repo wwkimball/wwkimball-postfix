@@ -73,12 +73,15 @@
 #  classes:
 #    - postfix
 #    - letsencrypt  # Not documented, here
+#  aliases:
+#    - &cert_file /etc/letsencrypt/live/mail.%{facts.domain}/fullchain.pem
+#    - &key_file /etc/letsencrypt/live/mail.%{facts.domain}/privkey.pem
 #  postfix::global_parameters:
 #    myhostname: mail.%{facts.domain}
-#    smtp_tls_cert_file: /etc/letsencrypt/live/mail.%{facts.domain}/fullchain.pem
-#    smtp_tls_key_file: /etc/letsencrypt/live/mail.%{facts.domain}/privkey.pem
-#    smtpd_tls_cert_file: /etc/letsencrypt/live/mail.%{facts.domain}/fullchain.pem
-#    smtpd_tls_key_file: /etc/letsencrypt/live/mail.%{facts.domain}/privkey.pem
+#    smtp_tls_cert_file: *cert_file
+#    smtp_tls_key_file: *key_file
+#    smtpd_tls_cert_file: *cert_file
+#    smtpd_tls_key_file: *key_file
 #
 class postfix::config {
   if 'purged' == $postfix::package_ensure {
