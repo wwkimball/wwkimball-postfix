@@ -6,3 +6,7 @@
 .project linguist-language=XML
 Rakefile linguist-language=Ruby
 
+*.rb eol=lf
+*.erb eol=lf
+*.pp eol=lf
+*.sh eol=lf
