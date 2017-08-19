@@ -3,10 +3,10 @@
   "name": "wkimball-postfix",
   "version": "0.1.0",
   "summary": "Fully manages postfix",
-  "license": "APLv2",
-  "project_page": "https://bitbucket.org/kimballstuff/wkimball-postfix/",
-  "source": "ssh://git@bitbucket.org:kimballstuff/wkimball-postfix.git",
-  "issues_url": "ssh://git@bitbucket.org:kimballstuff/wkimball-postfix/issues",
+  "license": "Apache-2.0",
+  "project_page": "https://github.com/wwkimball/wwkimball-postfix",
+  "source": "https://github.com/wwkimball/wwkimball-postfix.git",
+  "issues_url": "https://github.com/wwkimball/wwkimball-postfix/issues",
   "dependencies": [
     { "name": "puppetlabs/stdlib", "version_requirement": "4.x" }
   ],

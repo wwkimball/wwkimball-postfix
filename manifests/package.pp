@@ -27,8 +27,8 @@
 #
 class postfix::package {
   package { 'postfix':
-    name   => $postfix::package_name,
     ensure => $postfix::package_ensure,
+    name   => $postfix::package_name,
   }
 }
 # vim: syntax=puppet:tabstop=2:softtabstop=2:shiftwidth=2:expandtab:ai

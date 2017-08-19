@@ -1,0 +1,8 @@
+---
+fixtures:
+  symlinks:
+    postfix: "#{source_dir}"
+  forge_modules:
+    stdlib:
+      repo: puppetlabs/stdlib
+      ref: 4.18.0
