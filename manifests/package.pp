@@ -1,5 +1,3 @@
-# Class: postfix::package
-#
 # This subclass manages the postfix package.
 #
 # @summary Manages the postfix package.

@@ -1,5 +1,3 @@
-# Class: postfix::service
-#
 # This subclass optionally manages the postfix service.  The name of the managed
 # service can be customized if necessary and service management can be entirely
 # disabled.

@@ -1,8 +1,6 @@
-# Class: postfix
-#
-# This module fully manages postfix.  It can install and uninstall postifx,
-# configure or delete every vendor and custom configuration file, and optionally
-# manage the postfix service.
+# This module fully manages postfix.  It can install,  uninstall, and version-
+# pin postifx; configure or delete every vendor and custom configuration file;
+# and optionally manage the postfix service.
 #
 # @summary Fully manages postfix.
 #
