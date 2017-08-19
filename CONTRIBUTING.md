@@ -1,4 +1,4 @@
-# Contributing to wwkimball-dovecot
+# Contributing to wwkimball-postfix
 
 Contributors are welcome!  The rules for contributing to this project are really quite simple:
 
