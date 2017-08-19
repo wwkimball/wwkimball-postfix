@@ -1,10 +1,15 @@
 {
   "author": "William Kimball",
+  "name": "wkimball-postfix",
+  "version": "0.1.0",
+  "summary": "Fully manages postfix",
+  "license": "APLv2",
+  "project_page": "https://bitbucket.org/kimballstuff/wkimball-postfix/",
+  "source": "ssh://git@bitbucket.org:kimballstuff/wkimball-postfix.git",
+  "issues_url": "ssh://git@bitbucket.org:kimballstuff/wkimball-postfix/issues",
   "dependencies": [
     { "name": "puppetlabs/stdlib", "version_requirement": "4.x" }
   ],
-  "license": "APLv2",
-  "name": "wkimball-postfix",
   "operatingsystem_support": [
     {
       "operatingsystem": "RedHat",
@@ -15,12 +20,8 @@
       "operatingsystemrelease": ["6", "7"]
     }
   ],
-  "project_page": "https://bitbucket.org/kimballstuff/wkimball-postfix/",
   "requirements": [
     { "name": "puppet", "version_requirement": ">=5.0.0" }
   ],
-  "source": "ssh://git@bitbucket.org:kimballstuff/wkimball-postfix.git",
-  "summary": "Fully manages postfix",
-  "tags": [],
-  "version": "0.1.0"
+  "tags": [ "postfix", "hiera" ]
 }

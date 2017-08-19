@@ -86,8 +86,8 @@
 class postfix::config {
   if 'purged' == $postfix::package_ensure {
     file { $postfix::config_file_path:
-      ensure  => absent,
-      force   => true,
+      ensure => absent,
+      force  => true,
     }
   } else {
     $knockout_prefix = $postfix::config_hash_key_knockout_prefix
@@ -116,26 +116,20 @@ class postfix::config {
 
     # Manage all auxilliary configuration files
     pick($postfix::config_files, {}).each | String $file, Hash $config, | {
-      file {
-        default:
-          ensure => file,
-          *      => $postfix::config_file_attributes,;
-
-        "${postfix::config_file_path}/${file}":
-          content => template("${module_name}/config-file.erb"),;
+      file { "${postfix::config_file_path}/${file}":
+        ensure  => file,
+        content => template("${module_name}/config-file.erb"),
+        *       => $postfix::config_file_attributes,
       }
     }
     pick($postfix::check_files, {}).each |
       String $file,
       Array[String] $rules,
     | {
-      file {
-        default:
-          ensure => file,
-          *      => $postfix::config_file_attributes,;
-
-        "${postfix::config_file_path}/${file}":
-          content => template("${module_name}/check-file.erb"),;
+      file { "${postfix::config_file_path}/${file}":
+        ensure  => file,
+        content => template("${module_name}/check-file.erb"),
+        *       => $postfix::config_file_attributes,
       }
     }
   }

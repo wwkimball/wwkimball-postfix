@@ -8,13 +8,11 @@
 #
 # @param check_files Set of configuration files that serve as local lookup
 #  tables for postfix *_check rules (e.g.: header_checks, body_checks, and
-#  such).  The structure of this Hash is as follows:
-#  ```<br>
-#    FILENAME:<br>
-#      - CHECK_RULE<br>
-#      - ...<br>
-#    ...<br>
-#  ```
+#  such).  The structure of this Hash is as follows:<br>
+#  &nbsp; FILENAME:<br>
+#  &nbsp;&nbsp;&nbsp; - CHECK_RULE<br>
+#  &nbsp;&nbsp;&nbsp; - ...<br>
+#  &nbsp; ...<br>
 #  Default is found in the data directory of this module's source and is applied
 #  per this module's hiera.yaml.
 # @param config_file_attributes Set of attributes to apply to all configuration
@@ -34,13 +32,11 @@
 #  main.cf (controlled via global_parameters), this is a set of additional
 #  configuration files for Postfix.  Such files are typically lookup
 #  configurations for external services like MySQL, PostgreSQL, and such.  This
-#  Hash has structure:
-#  ```<br>
-#    FILENAME:<br>
-#      KEY: VALUE<br>
-#      ...<br>
-#    ...<br>
-#  ```
+#  Hash has structure:<br>
+#  &nbsp; FILENAME:<br>
+#  &nbsp;&nbsp;&nbsp; KEY: VALUE<br>
+#  &nbsp;&nbsp;&nbsp; ...<br>
+#  &nbsp; ...<br>
 #  Default is found in the data directory of this module's source and is applied
 #  per this module's hiera.yaml.
 # @param config_hash_key_knockout_prefix String of characters which, when
@@ -48,24 +44,20 @@
 #  and its value to be removed from the resulting rendered configuration file.
 #  Default is found in the data directory of this module's source and is applied
 #  per this module's hiera.yaml.
-# @param global_parameters Full content of main.cf as a Hash with structure:
-#  ```<br>
-#    KEY: VALUE<br>
-#    ...<br>
-#  ```
+# @param global_parameters Full content of main.cf as a Hash with structure:<br>
+#  &nbsp; KEY: VALUE<br>
+#  &nbsp; ...<br>
 #  Default is found in the data directory of this module's source and is applied
 #  per this module's hiera.yaml.
-# @param master_processes Full content of master.cf as a Hash with structure:
-#  ```<br>
-#    service-name/service-type:<br>
-#      command:  command name and its arguments<br>
-#      private:  OPTIONAL, y or n<br>
-#      unpriv:  OPTIONAL, y or n<br>
-#      chroot:  OPTIONAL, y or n<br>
-#      wakeup:  OPTIONAL, any positive number; may end with ?<br>
-#      maxproc:  OPTIONAL, any positive number<br>
-#    ...<br>
-#  ```
+# @param master_processes Full content of master.cf as a Hash with structure:<br>
+#  &nbsp; service-name/service-type:<br>
+#  &nbsp;&nbsp;&nbsp; command:  command name and its arguments<br>
+#  &nbsp;&nbsp;&nbsp; private:  OPTIONAL, y or n<br>
+#  &nbsp;&nbsp;&nbsp; unpriv:  OPTIONAL, y or n<br>
+#  &nbsp;&nbsp;&nbsp; chroot:  OPTIONAL, y or n<br>
+#  &nbsp;&nbsp;&nbsp; wakeup:  OPTIONAL, any positive number; may end with ?<br>
+#  &nbsp;&nbsp;&nbsp; maxproc:  OPTIONAL, any positive number<br>
+#  &nbsp; ...<br>
 #  Default is found in the data directory of this module's source and is applied
 #  per this module's hiera.yaml.
 # @param package_ensure Precise version number of the postfix package to install

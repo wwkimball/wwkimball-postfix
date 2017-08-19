@@ -1,0 +1,6 @@
+files:
+  # define files included in the analysis (defaults to ["{app,lib}/**/*.rb"])
+  included:
+    - manifests/**/*.pp
+    - templates/**/*.erb
+    - lib/**/*.rb
