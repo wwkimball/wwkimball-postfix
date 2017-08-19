@@ -49,6 +49,7 @@ end
 gems = {}
 
 gems['puppet'] = location_for(puppet_version)
+gems['puppet-strings'] = ['~> 1', { require: false }]
 
 # If facter or hiera versions have been specified via the environment
 # variables, use those versions. If not, and if the puppet version is < 3.5.0,
