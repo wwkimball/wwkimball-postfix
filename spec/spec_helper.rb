@@ -1,5 +1,6 @@
 require 'puppetlabs_spec_helper/module_spec_helper'
 require 'rspec-puppet-facts'
+require 'rspec-puppet-yaml'
 include RspecPuppetFacts
 
 default_facts = {
@@ -20,4 +21,9 @@ end
 
 RSpec.configure do |c|
   c.default_facts = default_facts
+
+  # Coverage generation
+  c.after(:suite) do
+    RSpec::Puppet::Coverage.report!
+  end
 end

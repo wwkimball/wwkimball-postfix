@@ -1,0 +1,9 @@
+---
+describe:
+  name: postfix
+  context:
+    'package.pp':
+      tests:
+        have_package_resource_count: 1
+        contain_package:
+          postfix: present

@@ -1,0 +1,11 @@
+---
+describe:
+  name: postfix
+  context:
+    'service.pp':
+      tests:
+        contain_service:
+          postfix:
+            with:
+              ensure: running
+              enable: true

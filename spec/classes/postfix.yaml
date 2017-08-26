@@ -1,0 +1,17 @@
+---
+describe:
+  name: postfix
+  context:
+    'init.pp':
+      tests:
+        compile:
+          with_all_deps: nil
+        contain_class:
+          postfix: {}
+          postfix::package:
+            that_comes_before: Class[postfix::config]
+          postfix::config:
+            that_requires: Class[postfix::package]
+            that_notifies: Class[postfix::service]
+          postfix::service:
+            that_subscribes_to: Class[postfix::config]

@@ -1,0 +1,19 @@
+---
+defaultFileProperties: &defaultFileProperties
+  ensure: file
+  owner: root
+  group: root
+
+describe:
+  name: postfix
+  context:
+    'config.pp':
+      tests:
+        contain_file:
+          /etc/postfix/main.cf:
+            with:
+              <<: *defaultFileProperties
+          /etc/postfix/master.cf:
+            with:
+              <<: *defaultFileProperties
+          /etc/postfix: directory
