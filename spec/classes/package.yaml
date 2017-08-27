@@ -7,3 +7,53 @@ describe:
         have_package_resource_count: 1
         contain_package:
           postfix: present
+      variants:
+        'uninstall':
+          let:
+            params:
+              package_ensure: absent
+          tests:
+            contain_package:
+              postfix: absent
+        'pinned package version':
+          let:
+            params:
+              package_ensure: 2:2.10.1-6.el7
+          tests:
+            contain_package:
+              postfix: 2:2.10.1-6.el7
+        'custom package name':
+          let:
+            params:
+              package_name: postfix-custom
+          tests:
+            contain_package:
+              postfix:
+                with:
+                  ensure: present
+                  name: postfix-custom
+    'package.pp negative tests':
+      variants:
+        'bad package_ensure':
+          let:
+            params:
+              package_ensure: 2.10
+          tests:
+            compile:
+              and_raise_error: !ruby/regexp /parameter 'package_ensure' expects a String value, got Float/
+        'bad package_name':
+          variants:
+            'value too short':
+              let:
+                params:
+                  package_name: a
+              tests:
+                compile:
+                  and_raise_error: !ruby/regexp /parameter 'package_name' expects a String\[\d+(, default)?\] value, got String/
+            'wrong data type':
+              let:
+                params:
+                  package_name: false
+              tests:
+                compile:
+                  and_raise_error: !ruby/regexp /parameter 'package_name' expects a String value, got Boolean/
