@@ -32,6 +32,7 @@ group :development do
   gem "puppet-module-posix-dev-r#{minor_version}",     require: false, platforms: [:ruby]
   gem "puppet-module-win-default-r#{minor_version}",   require: false, platforms: [:mswin, :mingw, :x64_mingw]
   gem "puppet-module-win-dev-r#{minor_version}",       require: false, platforms: [:mswin, :mingw, :x64_mingw]
+  gem "puppet-strings", '1.1.0',                       require: false, platforms: [:ruby]
 end
 
 puppet_version = ENV['PUPPET_GEM_VERSION']
@@ -49,7 +50,6 @@ end
 gems = {}
 
 gems['puppet'] = location_for(puppet_version)
-gems['puppet-strings'] = ['~> 1', { require: false }]
 
 # If facter or hiera versions have been specified via the environment
 # variables, use those versions. If not, and if the puppet version is < 3.5.0,
