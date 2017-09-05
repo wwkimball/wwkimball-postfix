@@ -1,7 +1,7 @@
 ---
 describe:
   name: postfix
-  variants:
+  context:
     'package.pp':
       tests:
         have_package_resource_count: 1
