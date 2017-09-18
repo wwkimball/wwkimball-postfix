@@ -3,9 +3,47 @@ describe:
   name: postfix
   context:
     'service.pp':
-      tests:
-        contain_service:
-          postfix:
-            with:
-              ensure: running
-              enable: true
+      variants:
+        'defaults':
+          tests:
+            contain_service:
+              postfix:
+                with:
+                  name: postfix
+                  ensure: running
+                  enable: true
+
+        'turn service off':
+          let:
+            params:
+              service_enable: false
+              service_ensure: stopped
+          tests:
+            contain_service:
+              postfix:
+                with:
+                  name: postfix
+                  ensure: stopped
+                  enable: false
+
+        'disable service management':
+          let:
+            params:
+              service_managed: false
+          tests:
+            '!contain_service':
+              postfix: {}
+
+        'custom service name':
+          let:
+            params:
+              service_name: postfix-custom
+          tests:
+            contain_service:
+              postfix:
+                with:
+                  name: postfix-custom
+                  ensure: running
+                  enable: true
+
+# vim: syntax=yaml:tabstop=2:softtabstop=2:shiftwidth=2:expandtab:ai

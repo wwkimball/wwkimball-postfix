@@ -172,4 +172,4 @@ postfix::global_parameters:
   setgid_group: postdrop
   manpage_directory: /usr/share/man
 
-# vim: tabstop=2:softtabstop=2:shiftwidth=2:expandtab:ai
+# vim: syntax=yaml:tabstop=2:softtabstop=2:shiftwidth=2:expandtab:ai

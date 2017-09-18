@@ -57,3 +57,5 @@ describe:
               tests:
                 compile:
                   and_raise_error: !ruby/regexp /parameter 'package_name' expects a String value, got Boolean/
+
+# vim: syntax=yaml:tabstop=2:softtabstop=2:shiftwidth=2:expandtab:ai

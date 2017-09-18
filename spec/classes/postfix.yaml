@@ -15,3 +15,5 @@ describe:
             that_notifies: Class[postfix::service]
           postfix::service:
             that_subscribes_to: Class[postfix::config]
+
+# vim: syntax=yaml:tabstop=2:softtabstop=2:shiftwidth=2:expandtab:ai

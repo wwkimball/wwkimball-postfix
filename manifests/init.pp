@@ -37,11 +37,14 @@
 #  &nbsp; ...<br>
 #  Default is found in the data directory of this module's source and is applied
 #  per this module's hiera.yaml.
-# @param config_hash_key_knockout_prefix String of characters which, when
+# @param config_hash_key_knockout_prefix String of `-` characters which, when
 #  present as a prefix to any supporting Hash key, will cause that entire key
 #  and its value to be removed from the resulting rendered configuration file.
-#  Default is found in the data directory of this module's source and is applied
-#  per this module's hiera.yaml.
+#  This is limited to one or more hyphen (`-`) characters because the matching
+#  patterns for the keys users would likely must assume a pre-known value for
+#  this parameter and one or more hyphens seems most reasonable.  Default is
+#  found in the data directory of this module's source and is applied per this
+#  module's hiera.yaml.
 # @param global_parameters Full content of main.cf as a Hash with structure:<br>
 #  &nbsp; KEY: VALUE<br>
 #  &nbsp; ...<br>
@@ -96,13 +99,13 @@ class postfix(
   Hash[String[4], Any]       $config_file_attributes,
   String[3]                  $config_file_path,
   Hash[String[4], Any]       $config_file_path_attributes,
-  String                     $config_hash_key_knockout_prefix,
+  Pattern[/^-+$/]            $config_hash_key_knockout_prefix,
   Hash[
-    Pattern[/^[A-Za-z0-9_]+$/],
+    Pattern[/^-*[A-Za-z0-9_]+$/],
     Variant[String, Integer]
   ]                          $global_parameters,
   Hash[
-    Pattern[/^[a-z]+\/(inet|unix|fifo|pass)$/],
+    Pattern[/^-*[a-z]+\/(inet|unix|fifo|pass)$/],
     Struct[{
       command             => String[2],
       Optional['private'] => Enum['y', 'n'],
@@ -115,7 +118,7 @@ class postfix(
   String[2]                  $package_name,
   Boolean                    $purge_config_file_path,
   Boolean                    $service_enable,
-  Enum[running, stopped]     $service_ensure,
+  Enum['running', 'stopped'] $service_ensure,
   Boolean                    $service_managed,
   String[2]                  $service_name,
   Optional[Hash[
@@ -125,7 +128,7 @@ class postfix(
   Optional[Hash[
     String[2],
     Hash[
-      Pattern[/^[A-Za-z0-9_]+$/],
+      Pattern[/^-*[A-Za-z0-9_]+$/],
       Any
   ]]]                        $config_files = undef,
 ) {

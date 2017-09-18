@@ -4,7 +4,13 @@
 
 ### Foreword
 
-The author of this module has long promoted a line of thinking that builds off of **Infrastructure As Code** into **Infrastructure As Data**.  With Hiera and modules like this, you can express your entire enterprise infrastructure purely as data without any more code for you to write or manage (not even antiquated roles/profiles).  As such, all examples in this document and the module's in-file documentation are presented strictly as YAML.
+The original author of this module has long promoted a line of thinking that
+builds off of **Infrastructure As Code** into **Infrastructure As Data**.  With
+Hiera and modules like this, end-users can simply import the code they need and
+then fully express their entire enterprise infrastructure purely as data without
+any more code to write or support (not even antiquated roles/profiles).  As
+such, all examples in this document and the module's in-file documentation are
+presented strictly as YAML.
 
 #### Table of Contents
 
@@ -60,7 +66,7 @@ Many usage examples are provided via the source code documentation.  Refer to th
 
 ## Reference
 
-This module is extensively documented via [Puppet Strings](https://github.com/puppetlabs/puppet-strings).  Pre-generated, web-accessible reference documentation can be found at [GitHub Pages for this project](https://wwkimball.github.io/wwkimball-postfix/docs/puppet_classes/postfix.html).
+This module is extensively documented via [Puppet Strings](https://github.com/puppetlabs/puppet-strings).  Pre-generated, web-accessible reference documentation can be found at [GitHub Pages for this project](https://wwkimball.github.io/wwkimball-postfix/docs/puppet_classes/postfix.html) whenever the Travis CI 'provider: pages' feature actually works (it is specifically cited as "experimental").  When the URL is dead, please just run `bundle install && bundle exec rake strings:generate` from this module's top directory to have a local copy of the documentation generated for you in the [docs](docs/index.html) directory (which is deliberately *not* committed to Git).
 
 ## Limitations
 

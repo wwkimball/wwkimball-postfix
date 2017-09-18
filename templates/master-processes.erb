@@ -19,8 +19,8 @@ def remove_knocked_out_keys(data)
   data
 end
 
-hashName = 'postfix::master_processes'
-config   = scope[hashName]
+hash_name = 'postfix::master_processes'
+config    = scope[hash_name]
 if config and !config.empty? and config.is_a?(Hash)
   remove_knocked_out_keys(config).each { |key, attrs|
     if key =~ /^([a-z]+)\/(inet|unix|fifo|pass)$/
@@ -41,7 +41,7 @@ else
   %>
 #
 # WARNING:
-# <%= hashName %> is missing or of an incorrect data type.
+# <%= hash_name %> is missing or of an incorrect data type.
 #
   <%
 end %>

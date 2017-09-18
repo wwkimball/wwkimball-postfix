@@ -1,19 +1,371 @@
 ---
-defaultFileProperties: &defaultFileProperties
-  ensure: file
+defaultDirectoryPermissions: &defaultDirectoryPermissions
   owner: root
   group: root
+  mode: '0755'
+
+defaultDirectoryAttributes: &defaultDirectoryAttributes
+  <<: *defaultDirectoryPermissions
+  ensure: directory
+
+defaultFilePermissions: &defaultFilePermissions
+  owner: root
+  group: root
+  mode: '0644'
+
+defaultFileAttributes: &defaultFileAttributes
+  <<: *defaultFilePermissions
+  ensure: file
+
+defaultMasterProcesses: &defaultMasterProcesses
+  smtp/inet:
+    private: n
+    chroot: n
+    command: smtpd
+  pickup/unix:
+    private: n
+    chroot: n
+    wakeup: 60
+    maxproc: 1
+    command: pickup
+  cleanup/unix:
+    private: n
+    chroot: n
+    maxproc: 0
+    command: cleanup
+  qmgr/unix:
+    private: n
+    chroot: n
+    wakeup: 300
+    maxproc: 1
+    command: qmgr
+  tlsmgr/unix:
+    chroot: n
+    wakeup: 1000?
+    maxproc: 1
+    command: tlsmgr
+  rewrite/unix:
+    chroot: n
+    command: trivial-rewrite
+  bounce/unix:
+    chroot: n
+    maxproc: 0
+    command: bounce
+  defer/unix:
+    chroot: n
+    maxproc: 0
+    command: bounce
+  trace/unix:
+    chroot: n
+    maxproc: 0
+    command: bounce
+  verify/unix:
+    chroot: n
+    maxproc: 1
+    command: verify
+  flush/unix:
+    private: n
+    chroot: n
+    wakeup: 1000?
+    maxproc: 0
+    command: flush
+  proxymap/unix:
+    chroot: n
+    command: proxymap
+  proxywrite/unix:
+    chroot: n
+    maxproc: 1
+    command: proxymap
+  smtp/unix:
+    chroot: n
+    command: smtp
+  relay/unix:
+    chroot: n
+    command: smtp
+  showq/unix:
+    private: n
+    chroot: n
+    command: showq
+  error/unix:
+    chroot: n
+    command: error
+  retry/unix:
+    chroot: n
+    command: error
+  discard/unix:
+    chroot: n
+    command: discard
+  local/unix:
+    unpriv: n
+    chroot: n
+    command: local
+  virtual/unix:
+    unpriv: n
+    chroot: n
+    command: virtual
+  lmtp/unix:
+    chroot: n
+    command: lmtp
+  anvil/unix:
+    chroot: n
+    maxproc: 1
+    command: anvil
+  scache/unix:
+    chroot: n
+    maxproc: 1
+    command: scache
+
+defaultGlobalParameters: &defaultGlobalParameters
+  queue_directory: /var/spool/postfix
+  command_directory: /usr/sbin
+  daemon_directory: /usr/libexec/postfix
+  data_directory: /var/lib/postfix
+  mail_owner: postfix
+  inet_interfaces: localhost
+  inet_protocols: all
+  mydestination: $myhostname, localhost.$mydomain, localhost
+  unknown_local_recipient_reject_code: 550
+  alias_maps: hash:/etc/aliases
+  alias_database: hash:/etc/aliases
+  debug_peer_level: 2
+  debugger_command: |1-
+
+    PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
+    ddd $daemon_directory/$process_name $process_id & sleep 5
+  sendmail_path: /usr/sbin/sendmail.postfix
+  newaliases_path: /usr/bin/newaliases.postfix
+  mailq_path: /usr/bin/mailq.postfix
+  setgid_group: postdrop
+  manpage_directory: /usr/share/man
+
+postfixLookupDatabase: &postfixLookupDatabase
+  hosts: email-database-server
+  user: email-user-name
+  password: secret-email-password
+  dbname: email-database
 
 describe:
   name: postfix
   context:
     'config.pp':
-      tests:
-        contain_file:
-          /etc/postfix/main.cf:
-            with:
-              <<: *defaultFileProperties
-          /etc/postfix/master.cf:
-            with:
-              <<: *defaultFileProperties
-          /etc/postfix: directory
+      variants:
+        'default config_file_path':
+          let:
+            params:
+              master_processes:
+                <<: *defaultMasterProcesses
+              global_parameters:
+                <<: *defaultGlobalParameters
+          tests:
+            contain_file:
+              /etc/postfix/main.cf:
+                with:
+                  <<: *defaultFileAttributes
+                with_content:  # Random sampling of vendor default main.cf lines
+                  - !ruby/regexp /^command_directory = \/usr\/sbin$/
+                  - !ruby/regexp /^queue_directory = \/var\/spool\/postfix$/
+                  - !ruby/regexp /^mail_owner = postfix$/
+                  - !ruby/regexp /^inet_interfaces = localhost$/
+                  - !ruby/regexp /^setgid_group = postdrop$/
+                  - !ruby/regexp /^manpage_directory = \/usr\/share\/man$/
+              /etc/postfix/master.cf:
+                with:
+                  <<: *defaultFileAttributes
+                with_content:  # Random sampling of vendor default master.cf lines
+                  - !ruby/regexp /^smtp\s+inet\s+n\s+-\s+n\s+-\s+-\s+smtpd$/
+                  - !ruby/regexp /^pickup\s+unix\s+n\s+-\s+n\s+60\s+1\s+pickup$/
+                  - !ruby/regexp /^flush\s+unix\s+n\s+-\s+n\s+1000\?\s+0\s+flush$/
+                  - !ruby/regexp /^proxywrite\s+unix\s+-\s+-\s+n\s+-\s+1\s+proxymap$/
+                  - !ruby/regexp /^local\s+unix\s+-\s+n\s+n\s+-\s+-\s+local$/
+                  - !ruby/regexp /^scache\s+unix\s+-\s+-\s+n\s+-\s+1\s+scache$/
+              /etc/postfix:
+                with:
+                  <<: *defaultDirectoryAttributes
+                  purge: true
+                  recurse: true
+                  recurselimit: 1
+          variants:
+            'change file ownership':
+              let:
+                params:
+                  config_file_path_attributes:
+                    <<: *defaultDirectoryPermissions
+                    owner: mail
+                    group: mail
+                  config_file_attributes:
+                    <<: *defaultFilePermissions
+                    owner: mail
+                    group: mail
+              tests:
+                contain_file:
+                  /etc/postfix:
+                    with:
+                      owner: mail
+                      group: mail
+                  /etc/postfix/main.cf:
+                    with:
+                      owner: mail
+                      group: mail
+                  /etc/postfix/master.cf:
+                    with:
+                      owner: mail
+                      group: mail
+
+            'custom master command':
+              let:
+                params:
+                  master_processes:
+                    <<: *defaultMasterProcesses
+                    test/unix:
+                      command: test 1
+              tests:
+                contain_file:
+                  /etc/postfix/master.cf:
+                    with_content:
+                      - !ruby/regexp /^test\s+unix\s+-\s+-\s+-\s+-\s+-\s+test 1$/
+
+            'custom global parameter':
+              let:
+                params:
+                  global_parameters:
+                    <<: *defaultGlobalParameters
+                    proxy_read_maps: $virtual_mailbox_domains
+                    virtual_mailbox_domains: proxy:mysql:/etc/postfix/lookup_domains.cf
+              tests:
+                contain_file:
+                  /etc/postfix/main.cf:
+                    with_content:
+                      - !ruby/regexp /^proxy_read_maps = \$virtual_mailbox_domains$/
+                      - !ruby/regexp /^virtual_mailbox_domains = proxy:mysql:/etc/postfix/lookup_domains.cf$/
+
+            'delete default master command':
+              let:
+                params:
+                  master_processes:
+                    <<: *defaultMasterProcesses
+                    --cleanup/unix:
+                      command: doesn't matter
+              tests:
+                contain_file:
+                  /etc/postfix/master.cf:
+                    without_content:
+                      - !ruby/regexp /^cleanup\s+unix\s+.*$/
+
+            'delete global parameter':
+              let:
+                params:
+                  global_parameters:
+                    <<: *defaultGlobalParameters
+                    --debugger_command: doesn't matter
+              tests:
+                contain_file:
+                  /etc/postfix/main.cf:
+                    without_content:
+                      - !ruby/regexp /^debugger_command =.*$/
+
+            'add custom check files':
+              let:
+                params:
+                  check_files:
+                    check_header:
+                      - '/X-SPAM-FLAG: YES/ REJECT  UCE detected.'
+                      - '/spam_agent/       REJECT  UCE detected.'
+                      - '/spam\.domain/     REJECT  UCE detected.'
+                    check_body:
+                      - '/spam\.domain/     REJECT  UCE detected.'
+              tests:
+                contain_file:
+                  /etc/postfix/check_header:
+                    with:
+                      <<: *defaultFileAttributes
+                    with_content:
+                      - !ruby/regexp /^/X-SPAM-FLAG:\sYES/ REJECT  UCE detected.$/
+                      - !ruby/regexp /^/spam_agent/       REJECT  UCE detected.$/
+                      - !ruby/regexp /^/spam\\.domain/     REJECT  UCE detected.$/
+                  /etc/postfix/check_body:
+                    with:
+                      <<: *defaultFileAttributes
+                    with_content:
+                      - !ruby/regexp /^/spam\\.domain/     REJECT  UCE detected.$/
+
+            'add custom config files':
+              let:
+                params:
+                  config_files:
+                    lookup_domains.cf:
+                      <<: *postfixLookupDatabase
+                      table: domain
+                      select_field: domain
+                      where_field: domain
+                      additional_conditions: and backupmx = '0' and active = '1'
+                    lookup_users.cf:
+                      <<: *postfixLookupDatabase
+                      table: mailbox
+                      select_field: maildir
+                      where_field: username
+                      additional_conditions: and active = '1'
+                      result_format: "'%s'"
+              tests:
+                contain_file:
+                  /etc/postfix/lookup_domains.cf:
+                    with:
+                      <<: *defaultFileAttributes
+                    with_content:
+                      - !ruby/regexp /^hosts = email-database-server$/
+                      - !ruby/regexp /^user = email-user-name$/
+                      - !ruby/regexp /^password = secret-email-password$/
+                      - !ruby/regexp /^dbname = email-database$/
+                      - !ruby/regexp /^table = domain$/
+                      - !ruby/regexp /^select_field = domain$/
+                      - !ruby/regexp /^where_field = domain$/
+                      - !ruby/regexp /^additional_conditions = and backupmx = '0' and active = '1'$/
+                  /etc/postfix/lookup_users.cf:
+                    with:
+                      <<: *defaultFileAttributes
+                    with_content:
+                      - !ruby/regexp /^hosts = email-database-server$/
+                      - !ruby/regexp /^user = email-user-name$/
+                      - !ruby/regexp /^password = secret-email-password$/
+                      - !ruby/regexp /^dbname = email-database$/
+                      - !ruby/regexp /^table = mailbox$/
+                      - !ruby/regexp /^select_field = maildir$/
+                      - !ruby/regexp /^where_field = username$/
+                      - !ruby/regexp /^additional_conditions = and active = '1'$/
+                      - !ruby/regexp /^result_format = '%s'$/
+
+        'custom config_file_path':
+          let:
+            params:
+              config_file_path: /opt/etc/postfix
+              master_processes:
+                <<: *defaultMasterProcesses
+              global_parameters:
+                <<: *defaultGlobalParameters
+          tests:
+            contain_file:
+              /opt/etc/postfix:
+                with:
+                  <<: *defaultDirectoryAttributes
+              /opt/etc/postfix/master.cf:
+                with:
+                  <<: *defaultFileAttributes
+              /opt/etc/postfix/main.cf:
+                with:
+                  <<: *defaultFileAttributes
+            '!contain_file':
+              /etc/postfix/master.cf: {}
+              /etc/postfix/main.cf: {}
+
+    'config.pp negative tests':
+      variants:
+        'attempt to make managed directories something else':
+          let:
+            params:
+              config_file_path_attributes:
+                <<: *defaultDirectoryAttributes
+                ensure: link
+          tests:
+            compile:
+              and_raise_error: !ruby/regexp /The attribute 'ensure' has already been set/
+
+# vim: syntax=yaml:tabstop=2:softtabstop=2:shiftwidth=2:expandtab:ai

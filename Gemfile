@@ -33,7 +33,7 @@ group :development do
   gem "puppet-module-win-default-r#{minor_version}",   require: false, platforms: [:mswin, :mingw, :x64_mingw]
   gem "puppet-module-win-dev-r#{minor_version}",       require: false, platforms: [:mswin, :mingw, :x64_mingw]
   gem "puppet-strings", '1.1.0',                       require: false, platforms: [:ruby]
-  gem "rspec-puppet-yaml", '0.1.0',                    require: false, platforms: [:ruby]
+  gem "rspec-puppet-yaml", '0.1.1',                    require: false, platforms: [:ruby]
 end
 
 puppet_version = ENV['PUPPET_GEM_VERSION']
