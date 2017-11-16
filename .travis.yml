@@ -32,7 +32,12 @@ matrix:
       env: PUPPET_VERSION="~> 5.0" CHECK=strings:generate PUBLISH_PAGES=true
     - rvm: 2.4.2
       bundler_args: --without system_tests
-      env: PUPPET_VERSION="~> 5.0" CHECK=spec DEPLOY_TO_FORGE=yes
+      env: PUPPET_VERSION="~> 5.0" CHECK=spec
+    - rvm: 2.4.2
+      bundler_args: --without system_tests
+      env: PUPPET_VERSION="~> 5.0" DEPLOY_TO_FORGE=yes
+      script:
+        - puppet module build
     - rvm: 2.3.1
       bundler_args: --without system_tests
       env: PUPPET_VERSION="~> 4.9" CHECK=spec
