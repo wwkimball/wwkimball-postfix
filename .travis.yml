@@ -11,25 +11,39 @@ before_install:
   - gem --version
   - bundle -v
 script:
-  - 'bundle exec rake $CHECK'
+  - bundle exec rake $CHECK
 matrix:
   fast_finish: true
   include:
-    - rvm: 2.4.1
+    - rvm: 2.4.2
       bundler_args: --without system_tests
-      env: PUPPET_GEM_VERSION="~> 5.0"
-      script:
-        - 'bundle exec rake $CHECK'
-        - 'bundle exec rake strings:generate'
+      env: PUPPET_VERSION="~> 5.0" CHECK=check:dot_underscore
+    - rvm: 2.4.2
+      bundler_args: --without system_tests
+      env: PUPPET_VERSION="~> 5.0" CHECK=check:test_file
+    - rvm: 2.4.2
+      bundler_args: --without system_tests
+      env: PUPPET_VERSION="~> 5.0" CHECK=validate
+    - rvm: 2.4.2
+      bundler_args: --without system_tests
+      env: PUPPET_VERSION="~> 5.0" CHECK=lint
+    - rvm: 2.4.2
+      bundler_args: --without system_tests
+      env: PUPPET_VERSION="~> 5.0" CHECK=strings:generate PUBLISH_PAGES=true
+    - rvm: 2.4.2
+      bundler_args: --without system_tests
+      env: PUPPET_VERSION="~> 5.0" CHECK=spec DEPLOY_TO_FORGE=yes
     - rvm: 2.3.1
       bundler_args: --without system_tests
-      env: PUPPET_GEM_VERSION="~> 4.9"
+      env: PUPPET_VERSION="~> 4.9" CHECK=spec
 branches:
   only:
     - master
-    - /^v\d/
+    - /^\d+\.\d+\.\d+$/
 notifications:
   email: false
+before_deploy:
+  - test -d docs && export PUBLISH_PAGES=true
 deploy:
   - provider: puppetforge
     user: wwkimball
@@ -38,11 +52,12 @@ deploy:
     on:
       tags: true
       all_branches: true
-      condition: "$DEPLOY_TO_FORGE = yes"
+      condition: $DEPLOY_TO_FORGE = yes
   - provider: pages
     skip_cleanup: true
     github_token: $GITHUB_TOKEN
     on:
       branch: master
+      condition: $PUBLISH_PAGES = true
     local_dir: docs
 
