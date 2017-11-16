@@ -66,7 +66,7 @@ Many usage examples are provided via the source code documentation.  Refer to th
 
 ## Reference
 
-This module is extensively documented via [Puppet Strings](https://github.com/puppetlabs/puppet-strings).  Pre-generated, web-accessible reference documentation can be found at [GitHub Pages for this project](https://wwkimball.github.io/wwkimball-postfix/docs/puppet_classes/postfix.html) whenever the Travis CI 'provider: pages' feature actually works (it is specifically cited as "experimental").  When the URL is dead, please just run `bundle install && bundle exec rake strings:generate` from this module's top directory to have a local copy of the documentation generated for you in the [docs](docs/index.html) directory (which is deliberately *not* committed to Git).
+This module is extensively documented via [Puppet Strings](https://github.com/puppetlabs/puppet-strings).  Pre-generated, web-accessible reference documentation can be found at [GitHub Pages for this project](https://wwkimball.github.io/wwkimball-postfix/puppet_classes/postfix.html) whenever the Travis CI 'provider: pages' feature actually works (it is specifically cited as "experimental").  When the URL is dead, please just run `bundle install && bundle exec rake strings:generate` from this module's top directory to have a local copy of the documentation generated for you in the [docs](docs/index.html) directory (which is deliberately *not* committed to Git).
 
 ## Limitations
 
