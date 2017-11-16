@@ -42,8 +42,6 @@ branches:
     - /^\d+\.\d+\.\d+$/
 notifications:
   email: false
-before_deploy:
-  - test -d docs && export PUBLISH_PAGES=true
 deploy:
   - provider: puppetforge
     user: wwkimball
