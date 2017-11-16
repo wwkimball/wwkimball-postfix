@@ -1,7 +1,7 @@
 {
   "author": "William Kimball",
   "name": "wkimball-postfix",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "summary": "Fully manages postfix",
   "license": "Apache-2.0",
   "project_page": "https://github.com/wwkimball/wwkimball-postfix",
