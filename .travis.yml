@@ -66,7 +66,16 @@ deploy:
     skip_cleanup: true
     user: wwkimball
     password:
-      secure: "b+BnUaKYfP6TRHmQWfd63ROr4wxlRzQyzGfJt82PauYqGsYDRAfXpyfnhhuTRj5BqTuDT8PmRCTQKNnkrGJ4DAj0VPLtjuEcXuatjTQ1juSV24l3uPSG0l5WWUE3XQJB4R8FmbWUi/RVAXGQeqHmXIkohx8p5xXs16RgwxZB2e2ShdPbGDJwDuTePdkwNni5aBznhk/o0R4lu8+ezpgaHafD4brg0bSZ8obhZJfqTODQHD5lx2t0NM6hiigolSj5d/f0gN3ldzVFRiz7QO+H6o5GC+coDQib61u8vqi7Rs2ch3D8nrr64wKwG6zVvhjN/fAZdxAFVTwFAHcfB5s5s/hX16FvkhIMijK1ZPvjMO3keT/TlIYOn6G8cHDZMA7OAe7dgWuPXtm0vIm1ayHfjW8lSIftBrTJN+NGSIlTmDBLnHfuxh9IWgnx77rIzFi4ZvHqjptR5f9D/Jt/DkhKDiVtYIX1VoSEJj+UIHov0g04UVfctHPIhvDyyHQtRvaTu8BqevmkyAdelNxrtQSeue7LVFrMH8dqwFG5k5QIjL0ShvmQDz8rOvnlESpfsshN2SVYgkdhg8HCA3F4G/j35uUZkKQpynDYg9tQIn+Y2xX4awtiPX9xOC72fdLeeP9HRpPFAJwUorI5W7z6RB9mVNeNnpTEOCIbZyo1k71VnRM="
+      secure: "zWoDgCvyMzLCWPIePucJOXAI6KqA4Syt9GKUPb7oozKUNx8eHTanpWrRu6BDsGaf\
+        QQ7RjxfFXA/cXJRTVrtUTRZvyMgBzKnCOe1sLN82eFrnl/YBr2I2E7hRKds+Rv/VsF6XpwR\
+        +fhZJVTM6xwxPpGPf/AWdAfGvwddAV84uvPvXmaoJ8wNIRfhpj1NyMs/kiYkzxNDNKn6i2C\
+        51BYUuWRoqV6wBJWSkiNrznIjS1B/etoe++ASujA9lPtRn745nCxnR6weX5BucnmFJJO+w0\
+        5JuSdZQ7+IGaXOlvtiWAEFb4TaLNOFw8RN0Ws4ZqPXvdXnwZyi2X1kJDlRaG5vvaDI7IB1y\
+        7CNRndNJmR2ckt6655QcABYmTHhnL5Ehm3uxEeamqlbGWysSK+F61NWHzQqiNzYV9JYalgR\
+        U22PUozvegZX+SD2jBRO99r+5dJwBCRXRomMk4O7pIhP0NV0z+tuyfs4Zespt6m7ConPC6U\
+        tpy92CKeh9yZ0R1b5qdtsxcfKO+bqLHpJTlBdASxFkDiXepmcuvzCBr5Tht5JUop8tdrTPb\
+        sIv2EkJX56kElvulFl02Msu5ZEiu4ngYVuskbiwrMCrIWqk+HtY9sEN7TXNSWbvCtJqEuC3\
+        nf0QWqL4xplzKdhCa6gHeAXJw6GhQdzl8sccbFdewVrKE1L2QuI="
     on:
       tags: true
       all_branches: true
