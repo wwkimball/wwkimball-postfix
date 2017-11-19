@@ -1,6 +1,6 @@
 # postfix
 
-[![Build Status](https://travis-ci.org/wwkimball/wwkimball-postfix.svg?branch=master)](https://travis-ci.org/wwkimball/wwkimball-postfix) [![Version](https://img.shields.io/puppetforge/v/wwkimball/postfix.svg)](https://forge.puppet.com/wwkimball/postfix) [![Documentation Coverage](https://inch-ci.org/github/wwkimball/wwkimball-postfix.svg?branch=master)](https://inch-ci.org/github/wwkimball/wwkimball-postfix) [![Coverage Status](https://coveralls.io/repos/github/wwkimball/wwkimball-postfix/badge.svg?branch=master)](https://coveralls.io/github/wwkimball/wwkimball-postfix?branch=master)
+[![Build Status](https://travis-ci.org/wwkimball/wwkimball-postfix.svg?branch=master)](https://travis-ci.org/wwkimball/wwkimball-postfix) [![Version](https://img.shields.io/puppetforge/v/wwkimball/postfix.svg)](https://forge.puppet.com/wwkimball/postfix) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/3bfb5fb2b84042cf972b468eb1418b80)](https://www.codacy.com/app/wwkimball/wwkimball-postfix?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=wwkimball/wwkimball-postfix&amp;utm_campaign=Badge_Grade) [![Documentation Coverage](https://inch-ci.org/github/wwkimball/wwkimball-postfix.svg?branch=master)](https://inch-ci.org/github/wwkimball/wwkimball-postfix) [![Coverage Status](https://coveralls.io/repos/github/wwkimball/wwkimball-postfix/badge.svg?branch=master)](https://coveralls.io/github/wwkimball/wwkimball-postfix?branch=master)
 
 ### Foreword
 
