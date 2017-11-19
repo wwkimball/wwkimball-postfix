@@ -1,8 +1,8 @@
 {
-  "author": "William W. Kimball, Jr. MBA MSIS",
+  "author": "William W. Kimball, Jr., MBA, MSIS",
   "name": "wwkimball-postfix",
-  "version": "0.1.1",
-  "summary": "Fully manages postfix",
+  "version": "0.1.2",
+  "summary": "Fully manages postfix with full Hiera support",
   "license": "Apache-2.0",
   "project_page": "https://github.com/wwkimball/wwkimball-postfix",
   "source": "https://github.com/wwkimball/wwkimball-postfix.git",
