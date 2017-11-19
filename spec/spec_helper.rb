@@ -1,7 +1,10 @@
 require 'puppetlabs_spec_helper/module_spec_helper'
 require 'rspec-puppet-facts'
 require 'rspec-puppet-yaml'
+require 'coveralls'
 include RspecPuppetFacts
+
+Coveralls.wear!
 
 default_facts = {
   puppetversion: Puppet.version,
