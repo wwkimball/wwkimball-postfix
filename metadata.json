@@ -1,6 +1,6 @@
 {
-  "author": "William Kimball",
-  "name": "wkimball-postfix",
+  "author": "William W. Kimball, Jr. MBA MSIS",
+  "name": "wwkimball-postfix",
   "version": "0.1.1",
   "summary": "Fully manages postfix",
   "license": "Apache-2.0",

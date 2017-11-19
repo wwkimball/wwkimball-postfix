@@ -3,6 +3,7 @@ sudo: false
 dist: trusty
 language: ruby
 cache: bundler
+bundler_args: --without system_tests
 before_install:
   - bundle -v
   - rm Gemfile.lock || true
@@ -15,27 +16,28 @@ script:
 matrix:
   fast_finish: true
   include:
+    - rvm: 2.3.1
+      env: PUPPET_VERSION="~> 4.9" CHECK=spec
     - rvm: 2.4.2
-      bundler_args: --without system_tests
       env: PUPPET_VERSION="~> 5.0" CHECK=check:dot_underscore
     - rvm: 2.4.2
-      bundler_args: --without system_tests
       env: PUPPET_VERSION="~> 5.0" CHECK=check:test_file
     - rvm: 2.4.2
-      bundler_args: --without system_tests
+      env: PUPPET_VERSION="~> 5.0" CHECK=check:git_ignore
+    - rvm: 2.4.2
       env: PUPPET_VERSION="~> 5.0" CHECK=validate
     - rvm: 2.4.2
-      bundler_args: --without system_tests
       env: PUPPET_VERSION="~> 5.0" CHECK=lint
     - rvm: 2.4.2
-      bundler_args: --without system_tests
-      env: PUPPET_VERSION="~> 5.0" CHECK=strings:generate PUBLISH_PAGES=true
+      env: PUPPET_VERSION="~> 5.0" CHECK=metadata_lint
+    - rvm: 2.4.1
+      env: PUPPET_VERSION="~> 5.0" CHECK=rubocop
     - rvm: 2.4.2
-      bundler_args: --without system_tests
-      env: PUPPET_VERSION="~> 5.0" CHECK=spec DEPLOY_TO_FORGE=yes
-    - rvm: 2.3.1
-      bundler_args: --without system_tests
-      env: PUPPET_VERSION="~> 4.9" CHECK=spec
+      env: PUPPET_VERSION="~> 5.0" CHECK=spec
+    - rvm: 2.4.2
+      env: PUPPET_VERSION="~> 5.0" CHECK=strings:generate PUBLISH_PAGES=true
+    - rvm: 2.4.1
+      env: PUPPET_VERSION="~> 5.0" CHECK=build DEPLOY_TO_FORGE=yes
 branches:
   only:
     - master
@@ -43,20 +45,28 @@ branches:
 notifications:
   email: false
 deploy:
+  - provider: pages
+    skip_cleanup: true
+    github_token: $GITHUB_TOKEN
+    local_dir: docs
+    on:
+      branch: master
+      condition: $PUBLISH_PAGES = true
   - provider: puppetforge
     skip_cleanup: true
     user: wwkimball
     password:
-      secure: "b+BnUaKYfP6TRHmQWfd63ROr4wxlRzQyzGfJt82PauYqGsYDRAfXpyfnhhuTRj5BqTuDT8PmRCTQKNnkrGJ4DAj0VPLtjuEcXuatjTQ1juSV24l3uPSG0l5WWUE3XQJB4R8FmbWUi/RVAXGQeqHmXIkohx8p5xXs16RgwxZB2e2ShdPbGDJwDuTePdkwNni5aBznhk/o0R4lu8+ezpgaHafD4brg0bSZ8obhZJfqTODQHD5lx2t0NM6hiigolSj5d/f0gN3ldzVFRiz7QO+H6o5GC+coDQib61u8vqi7Rs2ch3D8nrr64wKwG6zVvhjN/fAZdxAFVTwFAHcfB5s5s/hX16FvkhIMijK1ZPvjMO3keT/TlIYOn6G8cHDZMA7OAe7dgWuPXtm0vIm1ayHfjW8lSIftBrTJN+NGSIlTmDBLnHfuxh9IWgnx77rIzFi4ZvHqjptR5f9D/Jt/DkhKDiVtYIX1VoSEJj+UIHov0g04UVfctHPIhvDyyHQtRvaTu8BqevmkyAdelNxrtQSeue7LVFrMH8dqwFG5k5QIjL0ShvmQDz8rOvnlESpfsshN2SVYgkdhg8HCA3F4G/j35uUZkKQpynDYg9tQIn+Y2xX4awtiPX9xOC72fdLeeP9HRpPFAJwUorI5W7z6RB9mVNeNnpTEOCIbZyo1k71VnRM="
+      secure: "b+BnUaKYfP6TRHmQWfd63ROr4wxlRzQyzGfJt82PauYqGsYDRAfXpyfnhhuTRj5B\
+        qTuDT8PmRCTQKNnkrGJ4DAj0VPLtjuEcXuatjTQ1juSV24l3uPSG0l5WWUE3XQJB4R8FmbW\
+        Ui/RVAXGQeqHmXIkohx8p5xXs16RgwxZB2e2ShdPbGDJwDuTePdkwNni5aBznhk/o0R4lu8\
+        +ezpgaHafD4brg0bSZ8obhZJfqTODQHD5lx2t0NM6hiigolSj5d/f0gN3ldzVFRiz7QO+H6\
+        o5GC+coDQib61u8vqi7Rs2ch3D8nrr64wKwG6zVvhjN/fAZdxAFVTwFAHcfB5s5s/hX16Fv\
+        khIMijK1ZPvjMO3keT/TlIYOn6G8cHDZMA7OAe7dgWuPXtm0vIm1ayHfjW8lSIftBrTJN+N\
+        GSIlTmDBLnHfuxh9IWgnx77rIzFi4ZvHqjptR5f9D/Jt/DkhKDiVtYIX1VoSEJj+UIHov0g\
+        04UVfctHPIhvDyyHQtRvaTu8BqevmkyAdelNxrtQSeue7LVFrMH8dqwFG5k5QIjL0ShvmQD\
+        z8rOvnlESpfsshN2SVYgkdhg8HCA3F4G/j35uUZkKQpynDYg9tQIn+Y2xX4awtiPX9xOC72\
+        fdLeeP9HRpPFAJwUorI5W7z6RB9mVNeNnpTEOCIbZyo1k71VnRM="
     on:
       tags: true
       all_branches: true
       condition: $DEPLOY_TO_FORGE = yes
-  - provider: pages
-    skip_cleanup: true
-    github_token: $GITHUB_TOKEN
-    on:
-      branch: master
-      condition: $PUBLISH_PAGES = true
-    local_dir: docs
-
