@@ -43,7 +43,7 @@ matrix:
       env: PUPPET_VERSION="~> 5.0" CHECK=strings:generate PUBLISH_PAGES=true
 
     # Build the deployment artifact
-    - rvm: 2.4.1
+    - rvm: 2.4.2
       env: PUPPET_VERSION="~> 5.0" CHECK=build DEPLOY_TO_FORGE=yes
 
 branches:
