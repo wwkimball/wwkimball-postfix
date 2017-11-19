@@ -1,6 +1,6 @@
 # postfix
 
-[![Build Status](https://travis-ci.org/wwkimball/wwkimball-postfix.svg?branch=master)](https://travis-ci.org/wwkimball/wwkimball-postfix) [![Documentation Coverage](https://inch-ci.org/github/wwkimball/wwkimball-postfix.svg?branch=master)](https://inch-ci.org/github/wwkimball/wwkimball-postfix) [![Version](https://img.shields.io/puppetforge/v/wwkimball/postfix.svg)](https://forge.puppet.com/wwkimball/postfix)
+[![Build Status](https://travis-ci.org/wwkimball/wwkimball-postfix.svg?branch=master)](https://travis-ci.org/wwkimball/wwkimball-postfix) [![Version](https://img.shields.io/puppetforge/v/wwkimball/postfix.svg)](https://forge.puppet.com/wwkimball/postfix) [![Documentation Coverage](https://inch-ci.org/github/wwkimball/wwkimball-postfix.svg?branch=master)](https://inch-ci.org/github/wwkimball/wwkimball-postfix) [![Coverage Status](https://coveralls.io/repos/github/wwkimball/wwkimball-postfix/badge.svg?branch=master)](https://coveralls.io/github/wwkimball/wwkimball-postfix?branch=master)
 
 ### Foreword
 
@@ -26,7 +26,7 @@ presented strictly as YAML.
 
 ## Description
 
-This module was written from scratch, specifically for Puppet 5 and Hiera 5 to fully manage postfix; nothing more and nothing less.  No assumptions are made as to what you intend to do with postfix other than install or uninstall it, configure it or delete its configuration files, and -- when not ignoring it -- keep its service running or not running.
+This module was written from scratch, specifically for Puppet 5 and Hiera 5 to fully manage postfix; nothing more and nothing less.  No assumptions are made as to what you intend to do with postfix other than enjoy full control over it via Hiera in every respect.
 
 Here, "fully manage" means this Puppet module:
 
@@ -34,7 +34,7 @@ Here, "fully manage" means this Puppet module:
 * Controls every line in every postfix configuration file, both vendor- and user-supplied.
 * Optionally controls the postfix service.
 
-This is one of a generation of Puppet modules that fully extends control over the subject resources to Hiera.  Use modules like this where you'd rather express your infrastructure as data without any further Puppet code beyond the modules that make this possible.
+This is one of a generation of Puppet modules that fully extends control over the subject resources to Hiera.  Use modules like this where you'd rather express your infrastructure as data without any further Puppet code.
 
 ## Setup
 
@@ -66,11 +66,11 @@ Many usage examples are provided via the source code documentation.  Refer to th
 
 ## Reference
 
-This module is extensively documented via [Puppet Strings](https://github.com/puppetlabs/puppet-strings).  Pre-generated, web-accessible reference documentation can be found at [GitHub Pages for this project](https://wwkimball.github.io/wwkimball-postfix/puppet_classes/postfix.html) whenever the Travis CI 'provider: pages' feature actually works (it is specifically cited as "experimental").  When the URL is dead, please just run `bundle install && bundle exec rake strings:generate` from this module's top directory to have a local copy of the documentation generated for you in the [docs](docs/index.html) directory (which is deliberately *not* committed to Git).
+Pre-generated, web-accessible reference documentation -- with abundant **examples** -- can be found at [GitHub Pages for this project](https://wwkimball.github.io/wwkimball-postfix/puppet_classes/postfix.html), generated via via [Puppet Strings](https://github.com/puppetlabs/puppet-strings).  If you do not have access to this on-line documentation, please just run `bundle install && bundle exec rake strings:generate` from this module's top directory to have a local copy of the documentation generated for you in the [docs](docs/index.html) directory.
 
 ## Limitations
 
-Please refer to the *operatingsystem_support* section of [metadata.json](metadata.json) for OS compatibility.  This is not an exhaustive list.  You will very likely find that this module runs just fine on other operating system and version combinations, given the proper inputs.
+Please refer to the *operatingsystem_support* section of [metadata.json](metadata.json) for known, proven-in-production OS compatibility.  This is not an exhaustive list.  You will very likely find that this module runs just fine on other operating system and version combinations, given the proper inputs.  In fact, if you do, please report it back so the metadata can be updated!
 
 ## Development
 
