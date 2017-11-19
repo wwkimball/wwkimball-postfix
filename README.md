@@ -66,7 +66,7 @@ Many usage examples are provided via the source code documentation.  Refer to th
 
 ## Reference
 
-Pre-generated, web-accessible reference documentation -- with abundant **examples** -- can be found at [GitHub Pages for this project](https://wwkimball.github.io/wwkimball-postfix/puppet_classes/postfix.html), generated via via [Puppet Strings](https://github.com/puppetlabs/puppet-strings).  If you do not have access to this on-line documentation, please just run `bundle install && bundle exec rake strings:generate` from this module's top directory to have a local copy of the documentation generated for you in the [docs](docs/index.html) directory.
+Pre-generated, web-accessible reference documentation -- with abundant **examples** -- can be found at [GitHub Pages for this project](https://wwkimball.github.io/wwkimball-postfix/puppet_classes/postfix.html), generated via [Puppet Strings](https://github.com/puppetlabs/puppet-strings).  If you do not have access to this on-line documentation, please just run `bundle install && bundle exec rake strings:generate` from this module's top directory to have a local copy of the documentation generated for you in the [docs](docs/index.html) directory.
 
 ## Limitations
 
