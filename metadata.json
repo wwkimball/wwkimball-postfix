@@ -21,7 +21,7 @@
     }
   ],
   "requirements": [
-    { "name": "puppet", "version_requirement": ">=5.0.0" }
+    { "name": "puppet", "version_requirement": ">=4.9.0" }
   ],
   "tags": [ "postfix", "hiera" ]
 }

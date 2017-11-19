@@ -1,9 +1,11 @@
 ---
 sudo: false
 dist: trusty
+
 language: ruby
 cache: bundler
 bundler_args: --without system_tests
+
 before_install:
   - bundle -v
   - rm Gemfile.lock || true
@@ -11,39 +13,47 @@ before_install:
   - gem update bundler
   - gem --version
   - bundle -v
+
 script:
   - bundle exec rake $CHECK
 matrix:
   fast_finish: true
   include:
+    # Check that the module performs for Puppet 4.9.x
     - rvm: 2.3.1
       env: PUPPET_VERSION="~> 4.9" CHECK=spec
+
+    # Check for conflict markers, whitespace errors, and unwanted files
     - rvm: 2.4.2
-      env: PUPPET_VERSION="~> 5.0" CHECK=check:dot_underscore
+      env: PUPPET_VERSION="~> 5.0"
+      script:
+        - git diff --check
+        - bundle exec rake check:dot_underscore check:test_file check:git_ignore check:symlinks
+
+    # Check for syntax and linting errors
     - rvm: 2.4.2
-      env: PUPPET_VERSION="~> 5.0" CHECK=check:test_file
-    - rvm: 2.4.2
-      env: PUPPET_VERSION="~> 5.0" CHECK=check:git_ignore
-    - rvm: 2.4.2
-      env: PUPPET_VERSION="~> 5.0" CHECK=validate
-    - rvm: 2.4.2
-      env: PUPPET_VERSION="~> 5.0" CHECK=lint
-    - rvm: 2.4.2
-      env: PUPPET_VERSION="~> 5.0" CHECK=metadata_lint
-    - rvm: 2.4.1
-      env: PUPPET_VERSION="~> 5.0" CHECK=rubocop
+      env: PUPPET_VERSION="~> 5.0" CHECK='validate lint rubocop syntax:hiera'
+
+    # Check that the module performs for Puppet 5.0.x
     - rvm: 2.4.2
       env: PUPPET_VERSION="~> 5.0" CHECK=spec
+
+    # Generate the Puppet Strings documentation (YARD)
     - rvm: 2.4.2
       env: PUPPET_VERSION="~> 5.0" CHECK=strings:generate PUBLISH_PAGES=true
+
+    # Build the deployment artifact
     - rvm: 2.4.1
       env: PUPPET_VERSION="~> 5.0" CHECK=build DEPLOY_TO_FORGE=yes
+
 branches:
   only:
     - master
     - /^\d+\.\d+\.\d+$/
+
 notifications:
   email: false
+
 deploy:
   - provider: pages
     skip_cleanup: true
