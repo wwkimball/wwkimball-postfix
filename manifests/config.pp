@@ -110,7 +110,10 @@ class postfix::config {
       ensure       => directory,
       purge        => $postfix::purge_config_file_path,
       recurse      => $postfix::purge_config_file_path,
-      recurselimit => 1,
+      recurselimit => $postfix::purge_config_file_path ? {
+        true    => 1,
+        default => undef,
+      },
       *            => $postfix::config_file_path_attributes,
     }
 
