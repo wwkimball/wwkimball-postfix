@@ -48,6 +48,24 @@
 #    password: secret-email-password
 #    dbname: email-database
 #
+#  # Define the MySQL lookup maps, merging in the shared database parameters
+#  postfix::config_files:
+#    lookup_domains.cf:
+#      <<: *postfixLookupDatabase
+#      query: >
+#        SELECT domain FROM domain
+#        WHERE domain = '%s' AND backupmx = '0' AND active = '1'
+#    lookup_users.cf:
+#      <<: *postfixLookupDatabase
+#      query: >
+#        SELECT maildir FROM mailbox
+#        WHERE username = '%s' AND active = '1'
+#    lookup_aliases.cf:
+#      <<: *postfixLookupDatabase
+#      query: >
+#        SELECT goto FROM alias
+#        WHERE address = '%s' AND active = '1'
+#
 #  # Set global parameters to enable proxying the DB connections and define some
 #  # MySQL lookup maps.  Also tell Postfix where and as whom to deliver the
 #  # virtual mail.
@@ -62,28 +80,6 @@
 #    virtual_mailbox_base: *virtual_mail_base_directory
 #    virtual_gid_maps: static:5000
 #    virtual_uid_maps: static:5000
-#
-#  # Define the MySQL lookup maps, merging in the shared database parameters
-#  postfix::config_files:
-#    lookup_domains.cf:
-#      <<: *postfixLookupDatabase
-#      table: domain
-#      select_field: domain
-#      where_field: domain
-#      additional_conditions: and backupmx = '0' and active = '1'
-#    lookup_users.cf:
-#      <<: *postfixLookupDatabase
-#      table: mailbox
-#      select_field: maildir
-#      where_field: username
-#      additional_conditions: and active = '1'
-#      result_format: '%s'
-#    lookup_aliases.cf:
-#      <<: *postfixLookupDatabase
-#      table: alias
-#      select_field: goto
-#      where_field: address
-#      additional_conditions: and active = '1'
 #
 #  # Permit this module to manage the virtual mail delivery base directory
 #  postfix::virtual_delivery_dir: *virtual_mail_base_directory
