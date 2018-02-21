@@ -101,8 +101,8 @@ class postfix::config {
     # Note:  never destroy the $virtual_delivery_dir to avoid destroying mail.
     file {
       default:
-	      ensure => absent,
-	      force  => true,
+        ensure => absent,
+        force  => true,
       ;
 
       $postfix::config_file_path:;
