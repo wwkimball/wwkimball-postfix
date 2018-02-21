@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Puppet Class: postfix::config
+  
+    &mdash; Documentation by YARD 0.9.12
+  
+</title>
+
+  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "puppet_classes::postfix::config";
+  relpath = '../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../puppet_class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../_index.html">Index (p)</a> &raquo;
+    <span class='title'><span class='object_link'>Puppet Classes</span></span>
+     &raquo; 
+    <span class="title">postfix::config</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="puppet_class_list_link"
+        href="../puppet_class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Puppet Class: postfix::config</h1>
+<div class="box_info">
+  
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>
+      manifests/config.pp
+    </dd>
+  </dl>
+</div>
+
+  <h2>Summary</h2>
+  Manages all postfix configuration and check files.
+
+<h2>Overview</h2>
+<div class="docstring">
+  <div class="discussion">
+    
+<p>This subclass manages all postfix configuration files from master.cf and
+main.cf to all custom, user-created setting and check files. All of these
+files are kept on the node unless <code>postfix::package_ensure:
+purged</code>.</p>
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <p class="tag_title">Examples:</p>
+    
+      
+        <p class="example_title"><div class='inline'>
+<p>Default configuration; all files are vendor-defaults</p>
+</div></p>
+      
+      <pre class="example code"><code>---
+classes:
+  - postfix</code></pre>
+    
+      
+        <p class="example_title"><div class='inline'>
+<p>General config with PCRE header and body checks</p>
+</div></p>
+      
+      <pre class="example code"><code>---
+classes:
+  - postfix
+
+# Set global parameters
+postfix::global_parameters:
+  myhostname: mail.%{facts.domain}
+  mynetworks: 127.0.0.0/8
+  inet_interfaces: all
+  home_mailbox: Maildir/
+  header_checks: pcre:%{lookup(&#39;postfix::config_file_path&#39;)}/check_header
+  body_checks: pcre:%{lookup(&#39;postfix::config_file_path&#39;)}/check_body
+
+# Define the header and body checks
+postfix::check_files:
+  check_header:
+    - &#39;/X-SPAM-FLAG: YES/ REJECT  UCE detected.&#39;
+    - &#39;/spam_agent/       REJECT  UCE detected.&#39;
+    - &#39;/spam\.domain/     REJECT  UCE detected.&#39;
+  check_body:
+    - &#39;/spam\.domain/     REJECT  UCE detected.&#39;</code></pre>
+    
+      
+        <p class="example_title"><div class='inline'>
+<p>Use MySQL lookup tables for virtual mail delivery</p>
+</div></p>
+      
+      <pre class="example code"><code>---
+classes:
+  - postfix
+
+# Reusable YAML Values
+aliases:
+  - &amp;virtual_mail_base_directory /var/spool/virtual-mail
+
+# Define a reusable Hash alias for shared database parameters
+postfixLookupDatabase: &amp;postfixLookupDatabase
+  hosts: email-database-server
+  user: email-user-name
+  password: secret-email-password
+  dbname: email-database
+
+# Define the MySQL lookup maps, merging in the shared database parameters
+postfix::config_files:
+  lookup_domains.cf:
+    &lt;&lt;: *postfixLookupDatabase
+    query: &gt;
+      SELECT domain FROM domain
+      WHERE domain = &#39;%s&#39; AND backupmx = &#39;0&#39; AND active = &#39;1&#39;
+  lookup_users.cf:
+    &lt;&lt;: *postfixLookupDatabase
+    query: &gt;
+      SELECT maildir FROM mailbox
+      WHERE username = &#39;%s&#39; AND active = &#39;1&#39;
+  lookup_aliases.cf:
+    &lt;&lt;: *postfixLookupDatabase
+    query: &gt;
+      SELECT goto FROM alias
+      WHERE address = &#39;%s&#39; AND active = &#39;1&#39;
+
+# Set global parameters to enable proxying the DB connections and define some
+# MySQL lookup maps.  Also tell Postfix where and as whom to deliver the
+# virtual mail.
+postfix::global_parameters:
+  proxy_read_maps: &gt;
+    $virtual_mailbox_domains,
+    $virtual_mailbox_maps,
+    $virtual_alias_maps
+  virtual_mailbox_domains: proxy:mysql:%{lookup(&#39;postfix::config_file_path&#39;)}/lookup_domains.cf
+  virtual_mailbox_maps: proxy:mysql:%{lookup(&#39;postfix::config_file_path&#39;)}/lookup_users.cf
+  virtual_alias_maps: proxy:mysql:%{lookup(&#39;postfix::config_file_path&#39;)}/lookup_aliases.cf
+  virtual_mailbox_base: *virtual_mail_base_directory
+  virtual_gid_maps: static:5000
+  virtual_uid_maps: static:5000
+
+# Permit this module to manage the virtual mail delivery base directory
+postfix::virtual_delivery_dir: *virtual_mail_base_directory
+postfix::virtual_delivery_dir_attributes:
+  owner: 5000
+  group: 5000
+  mode: &#39;0750&#39;</code></pre>
+    
+      
+        <p class="example_title"><div class='inline'>
+<p>Add Let&#39;s Encrypt certificates</p>
+</div></p>
+      
+      <pre class="example code"><code>---
+classes:
+  - postfix
+  - letsencrypt  # Not documented, here
+
+# Define reusable value aliases for the certificate files
+aliases:
+  - &amp;cert_file /etc/letsencrypt/live/mail.%{facts.domain}/fullchain.pem
+  - &amp;key_file /etc/letsencrypt/live/mail.%{facts.domain}/privkey.pem
+
+# Set global parameters to use the certificate files for SMTP/D
+postfix::global_parameters:
+  myhostname: mail.%{facts.domain}
+  smtp_tls_cert_file: *cert_file
+  smtp_tls_key_file: *key_file
+  smtpd_tls_cert_file: *cert_file
+  smtpd_tls_key_file: *key_file</code></pre>
+    
+  </div>
+
+
+</div><div class="method_details_list">
+  <table class="source_code">
+    <tr>
+      <td>
+        <pre class="lines">
+
+
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179</pre>
+      </td>
+      <td>
+        <pre class="code"><span class="info file"># File 'manifests/config.pp', line 110</span>
+
+class postfix::config {
+  if &#39;purged&#39; == $postfix::package_ensure {
+    # Note:  never destroy the $virtual_delivery_dir to avoid destroying mail.
+    file { $postfix::config_file_path:
+      ensure =&gt; absent,
+      force  =&gt; true,
+    }
+  } else {
+    $knockout_prefix = $postfix::config_hash_key_knockout_prefix
+
+    # Ensure the configuration directory exists
+    $purge_recurse_limit = $postfix::purge_config_file_path ? {
+      true    =&gt; 1,
+      default =&gt; undef,
+    }
+    file { $postfix::config_file_path:
+      ensure       =&gt; directory,
+      purge        =&gt; $postfix::purge_config_file_path,
+      recurse      =&gt; $postfix::purge_config_file_path,
+      recurselimit =&gt; $purge_recurse_limit,
+      *            =&gt; $postfix::config_file_path_attributes,
+    }
+
+    # Manage master.cf and main.cf
+    file {
+      default:
+        ensure =&gt; file,
+        *      =&gt; $postfix::config_file_attributes,;
+
+      &quot;${postfix::config_file_path}/master.cf&quot;:
+        content =&gt; template(&quot;${module_name}/master-processes.erb&quot;),;
+
+      &quot;${postfix::config_file_path}/main.cf&quot;:
+        content =&gt; template(&quot;${module_name}/global-parameters.erb&quot;),;
+    }
+
+    # Manage all auxilliary configuration files
+    pick($postfix::config_files, {}).each | String $file, Hash $config, | {
+      file { &quot;${postfix::config_file_path}/${file}&quot;:
+        ensure  =&gt; file,
+        content =&gt; template(&quot;${module_name}/config-file.erb&quot;),
+        *       =&gt; $postfix::config_file_attributes,
+      }
+    }
+    pick($postfix::check_files, {}).each |
+      String $file,
+      Array[String] $rules,
+    | {
+      file { &quot;${postfix::config_file_path}/${file}&quot;:
+        ensure  =&gt; file,
+        content =&gt; template(&quot;${module_name}/check-file.erb&quot;),
+        *       =&gt; $postfix::config_file_attributes,
+      }
+    }
+
+    # Manage the optional $virtual_delivery_dir, if used.
+    if undef != $postfix::virtual_delivery_dir {
+      # No default attributes for this directory will be assumed because it is
+      # critical that Postfix be able to write to this directory tree.
+      if undef == $postfix::virtual_delivery_dir_attributes {
+        fail(&#39;When setting postfix::virtual_delivery_dir, you must also provide attributes as a Hash to postfix::virtual_delivery_dir_attributes.&#39;)
+      }
+
+      file { $postfix::virtual_delivery_dir:
+        ensure =&gt; directory,
+        *      =&gt; $postfix::virtual_delivery_dir_attributes,
+      }
+    }
+  }
+}</pre>
+      </td>
+    </tr>
+  </table>
+</div>
+</div>
+
+      <div id="footer">
+  Generated on Wed Feb 21 22:36:00 2018 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.12 (ruby-2.4.2).
+</div>
+
+    </div>
+  </body>
+</html>
