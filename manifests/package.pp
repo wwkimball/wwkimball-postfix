@@ -11,19 +11,34 @@
 #  ---
 #  classes:
 #    - postfix
+#
 #  postfix::package_ensure: latest
 #
 # @example Uninstall everything postfix-related but retain its configuration
 #  ---
 #  classes:
 #    - postfix
+#
 #  postfix::package_ensure: absent
 #
 # @example Uninstall everything postfix-related and destroy its configuration
 #  ---
 #  classes:
 #    - postfix
+#
 #  postfix::package_ensure: purged
+#
+# @example Install some plugins and keep them up-to-date
+#  ---
+#  classes:
+#    - postfix
+#
+#  postfix::package_ensure: latest
+#  postfix::plugin_packages:
+#    postfix-ldap:
+#      ensure: latest
+#    postfix-perl-scripts:
+#      ensure: latest
 #
 class postfix::package {
   $default_plugin_attributes = {
