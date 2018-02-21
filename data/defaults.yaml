@@ -52,6 +52,13 @@ postfix::config_file_attributes:
 postfix::config_hash_key_knockout_prefix: *knockout_prefix
 postfix::purge_config_file_path: true
 
+# Default spool directory
+postfix::spool_dir_base: /var/spool/postfix
+postfix::spool_dir_base_attributes:
+  owner: root
+  group: root
+  mode: '0755'
+
 # Default (vendor) postfix configuration
 postfix::master_processes:
   smtp/inet:

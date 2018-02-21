@@ -96,14 +96,14 @@
 #    - postfix
 #
 class postfix(
-  Hash[String[4], Any]        $config_file_attributes,
-  String[3]                   $config_file_path,
-  Hash[String[4], Any]        $config_file_path_attributes,
-  Pattern[/^-+$/]             $config_hash_key_knockout_prefix,
+  Hash[String[4], Any]           $config_file_attributes,
+  String[3]                      $config_file_path,
+  Hash[String[4], Any]           $config_file_path_attributes,
+  Pattern[/^-+$/]                $config_hash_key_knockout_prefix,
   Hash[
     Pattern[/^-*[A-Za-z0-9_]+$/],
     Variant[String, Integer]
-  ]                           $global_parameters,
+  ]                              $global_parameters,
   Hash[
     Pattern[/^-*[a-z]+\/(inet|unix|fifo|pass)$/],
     Struct[{
@@ -113,31 +113,39 @@ class postfix(
       Optional['chroot']  => Enum['y', 'n'],
       Optional['wakeup']  => Variant[Pattern[/^(0|[1-9][0-9]*)\??$/], Integer],
       Optional['maxproc'] => Integer,
-  }]]                         $master_processes,
-  String                      $package_ensure,
-  String[2]                   $package_name,
-  Boolean                     $purge_config_file_path,
-  Boolean                     $service_enable,
-  Enum['running', 'stopped']  $service_ensure,
-  Boolean                     $service_managed,
-  String[2]                   $service_name,
+  }]]                            $master_processes,
+  String                         $package_ensure,
+  String[2]                      $package_name,
+  Boolean                        $purge_config_file_path,
+  Boolean                        $service_enable,
+  Enum['running', 'stopped']     $service_ensure,
+  Boolean                        $service_managed,
+  String[2]                      $service_name,
+  Stdlib::Absolutepath           $spool_dir_base,
+  Hash[String[1], Any]           $spool_dir_base_attributes,
   Optional[Hash[
     String[2],
     Array[String[2]]
-  ]]                          $check_files      = undef,
+  ]]                             $check_files                     = undef,
   Optional[Hash[
     String[2],
     Hash[
       Pattern[/^-*[A-Za-z0-9_]+$/],
       Any
-  ]]]                         $config_files     = undef,
+  ]]]                            $config_files                    = undef,
   Optional[Hash[
     Pattern[/^postfix.*-.+$/],
     Struct[{
       Optional['ensure']   => String[1],
       Optional['provider'] => String[1],
       Optional['source']   => String[1],
-  }]]]                        $plugin_packages = undef,
+  }]]]                           $plugin_packages                 = undef,
+  Optional[Hash[
+    String[1],
+    Hash[String[1], Any]
+  ]]                             $spool_subdir_attributes         = undef,
+  Optional[Stdlib::Absolutepath] $virtual_delivery_dir            = undef,
+  Optional[Hash[String[1], Any]] $virtual_delivery_dir_attributes = undef,
 ) {
   class { '::postfix::package': }
   -> class { '::postfix::config': }

@@ -98,9 +98,15 @@
 #
 class postfix::config {
   if 'purged' == $postfix::package_ensure {
-    file { $postfix::config_file_path:
-      ensure => absent,
-      force  => true,
+    # Note:  never destroy the $virtual_delivery_dir to avoid destroying mail.
+    file {
+      default:
+	      ensure => absent,
+	      force  => true,
+      ;
+
+      $postfix::config_file_path:;
+      $postfix::spool_dir_base:;
     }
   } else {
     $knockout_prefix = $postfix::config_hash_key_knockout_prefix
@@ -146,6 +152,29 @@ class postfix::config {
         ensure  => file,
         content => template("${module_name}/check-file.erb"),
         *       => $postfix::config_file_attributes,
+      }
+    }
+
+    # Manage the spool directory and its subordinates
+    file { $postfix::spool_dir_base:
+      ensure => directory,
+      *      => $postfix::spool_dir_base_attributes,
+    }
+    pick($postfix::spool_subdir_attributes, {}).each |
+      String $subdir,
+      Hash   $attrs,
+    | {
+      file { "${postfix::spool_dir_base}/${subdir}":
+        ensure => directory,
+        *      => $attrs,
+      }
+    }
+
+    # Manage the optional $virtual_delivery_dir, if used.
+    if undef != $postfix::virtual_delivery_dir {
+      file { $postfix::virtual_delivery_dir:
+        ensure => directory,
+        *      => $postfix::virtual_delivery_dir_attributes,
       }
     }
   }
