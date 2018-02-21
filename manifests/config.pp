@@ -106,14 +106,15 @@ class postfix::config {
     $knockout_prefix = $postfix::config_hash_key_knockout_prefix
 
     # Ensure the configuration directory exists
+    $purge_recurse_limit = $postfix::purge_config_file_path ? {
+      true    => 1,
+      default => undef,
+    }
     file { $postfix::config_file_path:
       ensure       => directory,
       purge        => $postfix::purge_config_file_path,
       recurse      => $postfix::purge_config_file_path,
-      recurselimit => $postfix::purge_config_file_path ? {
-        true    => 1,
-        default => undef,
-      },
+      recurselimit => $purge_recurse_limit,
       *            => $postfix::config_file_path_attributes,
     }
 

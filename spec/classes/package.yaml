@@ -58,4 +58,29 @@ describe:
                 compile:
                   and_raise_error: !ruby/regexp /parameter 'package_name' expects a String value, got Boolean/
 
+    'package.pp with plugins':
+      let:
+        params:
+          plugin_packages:
+            postfix-mysql: {}
+            postfix-pcre: {}
+      tests:
+        have_package_resource_count: 3
+        contain_package:
+          postfix: present
+          postfix-mysql: present
+          postfix-pcre: present
+      variants:
+        'uninstall a plugin':
+          let:
+            params:
+              plugin_packages:
+                postfix-pcre:
+                  ensure: absent
+          tests:
+            contain_package:
+              postfix: present
+              postfix-mysql: present
+              postfix-pcre: absent
+
 # vim: syntax=yaml:tabstop=2:softtabstop=2:shiftwidth=2:expandtab:ai
