@@ -72,6 +72,24 @@ Pre-generated, web-accessible reference documentation -- with abundant **example
 
 Please refer to the *operatingsystem_support* section of [metadata.json](metadata.json) for known, proven-in-production OS compatibility.  This is not an exhaustive list.  You will very likely find that this module runs just fine on other operating system and version combinations, given the proper inputs.  In fact, if you do, please report it back so the metadata can be updated!
 
+### Postfix 3 Compatibility
+
+This module is compatible with both Postfix 2 and 3.  However, its default model is that of Postfix 2 due to its continuing prevalence.  In order to support Postfix 3, you **must** supply the following additional configuration:
+
+```yaml
+# Disable `purge_config_file_path` to preserve these unmanaged but important resources:
+#   - %{config_file_path}/dynamicmaps.cf.d/
+#   - %{config_file_path}/dynamicmaps.cf
+#   - %{config_file_path}/main.cf.proto
+#   - %{config_file_path}/master.cf.proto
+#   - %{config_file_path}/postfix-files
+postfix::purge_config_file_path: false
+
+# Specify a backward compatibility threshold for Postfix
+postfix::global_parameters:
+  compatibility_level: 2
+```
+
 ## Development
 
 Please refer to [CONTRIBUTING](CONTRIBUTING.md) to learn how to hack this module.
