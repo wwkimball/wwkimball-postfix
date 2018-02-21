@@ -98,6 +98,7 @@
 #
 class postfix::config {
   if 'purged' == $postfix::package_ensure {
+    # Note:  never destroy the $virtual_delivery_dir to avoid destroying mail.
     file { $postfix::config_file_path:
       ensure => absent,
       force  => true,
@@ -146,6 +147,14 @@ class postfix::config {
         ensure  => file,
         content => template("${module_name}/check-file.erb"),
         *       => $postfix::config_file_attributes,
+      }
+    }
+
+    # Manage the optional $virtual_delivery_dir, if used.
+    if undef != $postfix::virtual_delivery_dir {
+      file { $postfix::virtual_delivery_dir:
+        ensure => directory,
+        *      => $postfix::virtual_delivery_dir_attributes,
       }
     }
   }
