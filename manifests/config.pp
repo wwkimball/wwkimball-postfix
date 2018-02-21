@@ -32,10 +32,14 @@
 #    check_body:
 #      - '/spam\.domain/     REJECT  UCE detected.'
 #
-# @example Use MySQL lookup tables
+# @example Use MySQL lookup tables for virtual mail delivery
 #  ---
 #  classes:
 #    - postfix
+#
+#  # Reusable YAML Values
+#  aliases:
+#    - &virtual_mail_base_directory /var/spool/virtual-mail
 #
 #  # Define a reusable Hash alias for shared database parameters
 #  postfixLookupDatabase: &postfixLookupDatabase
@@ -44,8 +48,27 @@
 #    password: secret-email-password
 #    dbname: email-database
 #
+#  # Define the MySQL lookup maps, merging in the shared database parameters
+#  postfix::config_files:
+#    lookup_domains.cf:
+#      <<: *postfixLookupDatabase
+#      query: >
+#        SELECT domain FROM domain
+#        WHERE domain = '%s' AND backupmx = '0' AND active = '1'
+#    lookup_users.cf:
+#      <<: *postfixLookupDatabase
+#      query: >
+#        SELECT maildir FROM mailbox
+#        WHERE username = '%s' AND active = '1'
+#    lookup_aliases.cf:
+#      <<: *postfixLookupDatabase
+#      query: >
+#        SELECT goto FROM alias
+#        WHERE address = '%s' AND active = '1'
+#
 #  # Set global parameters to enable proxying the DB connections and define some
-#  # MySQL lookup maps.
+#  # MySQL lookup maps.  Also tell Postfix where and as whom to deliver the
+#  # virtual mail.
 #  postfix::global_parameters:
 #    proxy_read_maps: >
 #      $virtual_mailbox_domains,
@@ -54,28 +77,16 @@
 #    virtual_mailbox_domains: proxy:mysql:%{lookup('postfix::config_file_path')}/lookup_domains.cf
 #    virtual_mailbox_maps: proxy:mysql:%{lookup('postfix::config_file_path')}/lookup_users.cf
 #    virtual_alias_maps: proxy:mysql:%{lookup('postfix::config_file_path')}/lookup_aliases.cf
+#    virtual_mailbox_base: *virtual_mail_base_directory
+#    virtual_gid_maps: static:5000
+#    virtual_uid_maps: static:5000
 #
-#  # Define the MySQL lookup maps, merging in the shared database parameters
-#  postfix::config_files:
-#    lookup_domains.cf:
-#      <<: *postfixLookupDatabase
-#      table: domain
-#      select_field: domain
-#      where_field: domain
-#      additional_conditions: and backupmx = '0' and active = '1'
-#    lookup_users.cf:
-#      <<: *postfixLookupDatabase
-#      table: mailbox
-#      select_field: maildir
-#      where_field: username
-#      additional_conditions: and active = '1'
-#      result_format: '%s'
-#    lookup_aliases.cf:
-#      <<: *postfixLookupDatabase
-#      table: alias
-#      select_field: goto
-#      where_field: address
-#      additional_conditions: and active = '1'
+#  # Permit this module to manage the virtual mail delivery base directory
+#  postfix::virtual_delivery_dir: *virtual_mail_base_directory
+#  postfix::virtual_delivery_dir_attributes:
+#    owner: 5000
+#    group: 5000
+#    mode: '0750'
 #
 # @example Add Let's Encrypt certificates
 #  ---
@@ -173,6 +184,12 @@ class postfix::config {
 
     # Manage the optional $virtual_delivery_dir, if used.
     if undef != $postfix::virtual_delivery_dir {
+      # No default attributes for this directory will be assumed because it is
+      # critical that Postfix be able to write to this directory tree.
+      if undef == $postfix::virtual_delivery_dir_attributes {
+        fail("When setting postfix::virtual_delivery_dir, you must also provide attributes as a Hash to postfix::virtual_delivery_dir_attributes.")
+      }
+
       file { $postfix::virtual_delivery_dir:
         ensure => directory,
         *      => $postfix::virtual_delivery_dir_attributes,

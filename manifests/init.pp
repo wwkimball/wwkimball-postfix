@@ -100,6 +100,17 @@
 # @param service_name Name of the service to manage when `service_managed` is
 #  enabled.  Default is found in the data directory of this module's source and
 #  is applied per this module's hiera.yaml.
+# @param virtual_delivery_dir Fully-qualified path to the base directory for all
+#  <em>virtual</em> mail delivery.  This directory -- and all predecessors --
+#  must be writable to the user as whom postfix runs or its primary group.  As
+#  an optional parameter, there is no default value, which has no effect.
+# @param virtual_delivery_dir_attributes Puppet attributes to apply to
+#  `virtual_delivery_dir` as a Hash with structure:<br>
+#  &nbsp; KEY: VALUE<br>
+#  &nbsp; ...<br>
+#  where KEY is any supported attribute from https://puppet.com/docs/puppet/latst/types/file.html#file-attributes
+#  Users generally need to add `owner`, `group`, and `mode`.  As an optional
+#  parameter, there is no default value, which has no effect.
 #
 # @see http://www.postfix.org/master.5.html
 # @see http://www.postfix.org/postconf.5.html
