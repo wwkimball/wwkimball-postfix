@@ -164,6 +164,12 @@ class postfix::config {
 
     # Manage the optional $virtual_delivery_dir, if used.
     if undef != $postfix::virtual_delivery_dir {
+      # No default attributes for this directory will be assumed because it is
+      # critical that Postfix be able to write to this directory tree.
+      if undef == $postfix::virtual_delivery_dir_attributes {
+        fail("When setting postfix::virtual_delivery_dir, you must also provide attributes as a Hash to postfix::virtual_delivery_dir_attributes.")
+      }
+
       file { $postfix::virtual_delivery_dir:
         ensure => directory,
         *      => $postfix::virtual_delivery_dir_attributes,

@@ -356,6 +356,22 @@ describe:
               /etc/postfix/master.cf: {}
               /etc/postfix/main.cf: {}
 
+    'config.pp manage virtual mail delivery directory':
+      let:
+        params:
+          virtual_delivery_dir: /var/spool/virtmail
+          virtual_delivery_dir_attributes:
+            owner: postfix
+            group: mail
+            mode: '0750'
+      tests:
+        contain_file:
+          /var/spool/virtmail:
+            with:
+              owner: postfix
+              group: mail
+              mode: '0750'
+
     'config.pp negative tests':
       variants:
         'attempt to make managed directories something else':
@@ -367,5 +383,12 @@ describe:
           tests:
             compile:
               and_raise_error: !ruby/regexp /The attribute 'ensure' has already been set/
+        'attempt to manage virtual mail delivery directory without attributes':
+          let:
+            params:
+              virtual_delivery_dir: /var/spool/virtmail
+          tests:
+            compile:
+              and_raise_error: !ruby/regexp /When setting postfix::virtual_delivery_dir, you must also provide attributes as a Hash to postfix::virtual_delivery_dir_attributes/
 
 # vim: syntax=yaml:tabstop=2:softtabstop=2:shiftwidth=2:expandtab:ai
