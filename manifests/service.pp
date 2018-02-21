@@ -31,6 +31,9 @@ class postfix::service {
       enable    => $postfix::service_enable,
       subscribe => [ Package['postfix'], ],
     }
+
+    # Ensure that changes to plugins also trigger service restarts
+    Package <| tag == 'postfix-plugin' |> ~> Service['postfix']
   }
 }
 # vim: syntax=puppet:tabstop=2:softtabstop=2:shiftwidth=2:expandtab:ai

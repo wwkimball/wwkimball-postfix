@@ -26,6 +26,8 @@ lookup_options:
     <<: *deep_merge
   postfix::master_processes:
     <<: *deep_merge
+  postfix::plugin_packages:
+    <<: *deep_merge
 
 # Ensure the package is at least installed
 postfix::package_ensure: present

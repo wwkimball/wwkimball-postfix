@@ -49,7 +49,8 @@
 #  &nbsp; KEY: VALUE<br>
 #  &nbsp; ...<br>
 #  Default is found in the data directory of this module's source and is applied
-#  per this module's hiera.yaml.
+#  per this module's hiera.yaml.  <strong>NOTE</strong>:  When using Postfix 3+,
+#  you must set an appropriate `compatibility_level`.
 # @param master_processes Full content of master.cf as a Hash with structure:<br>
 #  &nbsp; service-name/service-type:<br>
 #  &nbsp;&nbsp;&nbsp; command:  command name and its arguments<br>
@@ -69,10 +70,23 @@
 # @param package_name Name of the primary postfix package to manage, per your
 #  operating system and distribution.  Default is found in the data directory of
 #  this module's source and is applied per this module's hiera.yaml.
+# @param plugin_packages Hash describing additional postfix packages to install.
+#  This is necessary for Postfix 3+ where features like MySQL or PgSQL are
+#  enabled by which of these additional plugin_packages are installed along with
+#  Postfix.  Such plugin packages are typically named like "postfix-mysql" or
+#  "postfix3-mysql", depending on your upstream repositories' naming
+#  conventions.  This Hash has structure:<br>
+#  &nbsp; /^postfix.*-.+$/:<br>
+#  &nbsp;&nbsp;&nbsp; ensure:  OPTIONAL, https://puppet.com/docs/puppet/latest/types/package.html#package-attribute-ensure<br>
+#  &nbsp;&nbsp;&nbsp; provider:  OPTIONAL, https://puppet.com/docs/puppet/latest/types/package.html#package-attribute-provider<br>
+#  &nbsp;&nbsp;&nbsp; source:  OPTIONAL, https://puppet.com/docs/puppet/latest/types/package.html#package-attribute-source<br>
+#  &nbsp; ...<br>
+#  By default, no plugin packages are installed; you must indicate all Postfix
+#  plugins that you wish to install.
 # @param purge_config_file_path Indicates whether to ensure that only Puppet-
 #  managed configuration files exist in `config_file_path`.  Default is found in
 #  the data directory of this module's source and is applied per this module's
-#  hiera.yaml.
+#  hiera.yaml.  <strong>WARNING</strong>:  Set this to `false` for Postfix 3+.
 # @param service_enable Indicates whether the postfix service will self-start
 #  on node restart.  Default is found in the data directory of this module's
 #  source and is applied per this module's hiera.yaml.
@@ -86,6 +100,17 @@
 # @param service_name Name of the service to manage when `service_managed` is
 #  enabled.  Default is found in the data directory of this module's source and
 #  is applied per this module's hiera.yaml.
+# @param virtual_delivery_dir Fully-qualified path to the base directory for all
+#  <em>virtual</em> mail delivery.  This directory -- and all predecessors --
+#  must be writable to the user as whom postfix runs or its primary group.  As
+#  an optional parameter, there is no default value, which has no effect.
+# @param virtual_delivery_dir_attributes Puppet attributes to apply to
+#  `virtual_delivery_dir` as a Hash with structure:<br>
+#  &nbsp; KEY: VALUE<br>
+#  &nbsp; ...<br>
+#  where KEY is any supported attribute from https://puppet.com/docs/puppet/latst/types/file.html#file-attributes
+#  Users generally need to add `owner`, `group`, and `mode`.  As an optional
+#  parameter, there is no default value, which has no effect.
 #
 # @see http://www.postfix.org/master.5.html
 # @see http://www.postfix.org/postconf.5.html
@@ -95,15 +120,35 @@
 #  classes:
 #    - postfix
 #
+# @example Minimally install Postfix 3 with PCRE and MySQL support
+#  # This fictional upstream repository uses the name 'postfix' for Postfix
+#  # version 2.x and a different name, 'postfix3', for Postfix 3 packages.  Both
+#  # use the same service name, 'postfix' (the default).
+#  ---
+#  classes:
+#    - postfix
+#
+#  postfix::package_name: postfix3
+#
+#  # You MUST disable purge_config_file_path for Postfix 3, for now.  If you
+#  # fail to do so, some important -- unmanaged -- configuration files will be
+#  # destroyed.
+#  postfix::purge_config_file_path: false
+#
+#  # Add Postfix plugin support for PCRE and MySQL
+#  postfix::plugin_packages:
+#    postfix3-pcre: {}
+#    postfix3-mysql: {}
+#
 class postfix(
-  Hash[String[4], Any]       $config_file_attributes,
-  String[3]                  $config_file_path,
-  Hash[String[4], Any]       $config_file_path_attributes,
-  Pattern[/^-+$/]            $config_hash_key_knockout_prefix,
+  Hash[String[4], Any]           $config_file_attributes,
+  String[3]                      $config_file_path,
+  Hash[String[4], Any]           $config_file_path_attributes,
+  Pattern[/^-+$/]                $config_hash_key_knockout_prefix,
   Hash[
     Pattern[/^-*[A-Za-z0-9_]+$/],
     Variant[String, Integer]
-  ]                          $global_parameters,
+  ]                              $global_parameters,
   Hash[
     Pattern[/^-*[a-z]+\/(inet|unix|fifo|pass)$/],
     Struct[{
@@ -113,24 +158,33 @@ class postfix(
       Optional['chroot']  => Enum['y', 'n'],
       Optional['wakeup']  => Variant[Pattern[/^(0|[1-9][0-9]*)\??$/], Integer],
       Optional['maxproc'] => Integer,
-  }]]                        $master_processes,
-  String                     $package_ensure,
-  String[2]                  $package_name,
-  Boolean                    $purge_config_file_path,
-  Boolean                    $service_enable,
-  Enum['running', 'stopped'] $service_ensure,
-  Boolean                    $service_managed,
-  String[2]                  $service_name,
+  }]]                            $master_processes,
+  String                         $package_ensure,
+  String[2]                      $package_name,
+  Boolean                        $purge_config_file_path,
+  Boolean                        $service_enable,
+  Enum['running', 'stopped']     $service_ensure,
+  Boolean                        $service_managed,
+  String[2]                      $service_name,
   Optional[Hash[
     String[2],
     Array[String[2]]
-  ]]                         $check_files  = undef,
+  ]]                             $check_files                     = undef,
   Optional[Hash[
     String[2],
     Hash[
       Pattern[/^-*[A-Za-z0-9_]+$/],
       Any
-  ]]]                        $config_files = undef,
+  ]]]                            $config_files                    = undef,
+  Optional[Hash[
+    Pattern[/^postfix.*-.+$/],
+    Struct[{
+      Optional['ensure']   => String[1],
+      Optional['provider'] => String[1],
+      Optional['source']   => String[1],
+  }]]]                           $plugin_packages                 = undef,
+  Optional[Stdlib::Absolutepath] $virtual_delivery_dir            = undef,
+  Optional[Hash[String[1], Any]] $virtual_delivery_dir_attributes = undef,
 ) {
   class { '::postfix::package': }
   -> class { '::postfix::config': }
