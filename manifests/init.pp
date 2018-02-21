@@ -140,6 +140,10 @@ class postfix(
       Optional['provider'] => String[1],
       Optional['source']   => String[1],
   }]]]                           $plugin_packages                 = undef,
+  Optional[Hash[
+    String[1],
+    Hash[String[1], Any]
+  ]]                             $spool_subdir_attributes         = undef,
   Optional[Stdlib::Absolutepath] $virtual_delivery_dir            = undef,
   Optional[Hash[String[1], Any]] $virtual_delivery_dir_attributes = undef,
 ) {
