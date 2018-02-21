@@ -32,10 +32,14 @@
 #    check_body:
 #      - '/spam\.domain/     REJECT  UCE detected.'
 #
-# @example Use MySQL lookup tables
+# @example Use MySQL lookup tables for virtual mail delivery
 #  ---
 #  classes:
 #    - postfix
+#
+#  # Reusable YAML Values
+#  aliases:
+#    - &virtual_mail_base_directory /var/spool/virtual-mail
 #
 #  # Define a reusable Hash alias for shared database parameters
 #  postfixLookupDatabase: &postfixLookupDatabase
@@ -45,7 +49,8 @@
 #    dbname: email-database
 #
 #  # Set global parameters to enable proxying the DB connections and define some
-#  # MySQL lookup maps.
+#  # MySQL lookup maps.  Also tell Postfix where and as whom to deliver the
+#  # virtual mail.
 #  postfix::global_parameters:
 #    proxy_read_maps: >
 #      $virtual_mailbox_domains,
@@ -54,6 +59,9 @@
 #    virtual_mailbox_domains: proxy:mysql:%{lookup('postfix::config_file_path')}/lookup_domains.cf
 #    virtual_mailbox_maps: proxy:mysql:%{lookup('postfix::config_file_path')}/lookup_users.cf
 #    virtual_alias_maps: proxy:mysql:%{lookup('postfix::config_file_path')}/lookup_aliases.cf
+#    virtual_mailbox_base: *virtual_mail_base_directory
+#    virtual_gid_maps: static:5000
+#    virtual_uid_maps: static:5000
 #
 #  # Define the MySQL lookup maps, merging in the shared database parameters
 #  postfix::config_files:
@@ -76,6 +84,13 @@
 #      select_field: goto
 #      where_field: address
 #      additional_conditions: and active = '1'
+#
+#  # Permit this module to manage the virtual mail delivery base directory
+#  postfix::virtual_delivery_dir: *virtual_mail_base_directory
+#  postfix::virtual_delivery_dir_attributes:
+#    owner: 5000
+#    group: 5000
+#    mode: '0750'
 #
 # @example Add Let's Encrypt certificates
 #  ---
