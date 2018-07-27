@@ -141,6 +141,14 @@
 #    postfix3-mysql: {}
 #
 class postfix(
+  Enum['present', 'absent']      $backup_cron_ensure,
+  String[1]                      $backup_cron_frequency,
+  String[1]                      $backup_directory_group,
+  String[3]                      $backup_directory_mode,
+  String[1]                      $backup_directory_owner,
+  String[1]                      $backup_exec_path,
+  Integer                        $backup_rotate,
+  String[1]                      $backup_tar_opts,
   Hash[String[4], Any]           $config_file_attributes,
   String[3]                      $config_file_path,
   Hash[String[4], Any]           $config_file_path_attributes,
@@ -166,6 +174,8 @@ class postfix(
   Enum['running', 'stopped']     $service_ensure,
   Boolean                        $service_managed,
   String[2]                      $service_name,
+  Optional[Stdlib::Absolutepath] $backup_directory                = undef,
+  Optional[String[1]]            $backup_gpg_recipient            = undef,
   Optional[Hash[
     String[2],
     Array[String[2]]

@@ -108,11 +108,22 @@
 #    smtpd_tls_key_file: *key_file
 #
 class postfix::config {
+  $backup_virt_script = '/usr/local/sbin/postfix-backup-virtuals.sh'
+  $backup_virt_cron   = 'postfix-backup-virtuals'
+
   if 'purged' == $postfix::package_ensure {
     # Note:  never destroy the $virtual_delivery_dir to avoid destroying mail.
     file { $postfix::config_file_path:
       ensure => absent,
       force  => true,
+    }
+
+    file { $backup_virt_script:
+      ensure => absent,
+    }
+
+    cron { $backup_virt_cron:
+      ensure => absent,
     }
   } else {
     $knockout_prefix = $postfix::config_hash_key_knockout_prefix
@@ -173,6 +184,50 @@ class postfix::config {
       file { $postfix::virtual_delivery_dir:
         ensure => directory,
         *      => $postfix::virtual_delivery_dir_attributes,
+      }
+    }
+
+    # Automated backups are available but two control variables determine which
+    # assets are managed by Puppet:
+    #   * Without a backup directory, there's nothing to do.  So, remove all
+    #     automation assets.
+    #   * Without a backup cron, there can be a managed directory, but the
+    #     caller has to sort out their own backup automation.
+    if undef == $postfix::backup_directory {
+      file { $backup_virt_script:
+        ensure => absent,
+      }
+      cron { $backup_virt_cron:
+        ensure => absent,
+      }
+    } else {
+      # Manage the optional backup directory if requested and the backup cron is
+      # present.
+      if $postfix::manage_backup_directory
+        and 'present' == $postfix::backup_cron_ensure
+      {
+        file { $postfix::backup_directory:
+          ensure => directory,
+          owner  => $postfix::backup_directory_owner,
+          group  => $postfix::backup_directory_group,
+          mode   => $postfix::backup_directory_mode,
+        }
+      }
+
+      # Make the backup scripts available when the backup cron is enabled.
+      file { $backup_virt_script:
+        ensure  => $postfix::backup_cron_ensure,
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0700',
+        content => template("${module_name}/backup-virtuals.erb"),
+      }
+
+      cron { $backup_virt_cron:
+        ensure  => $postfix::backup_cron_ensure,
+        command => $backup_virt_script,
+        special => $postfix::backup_cron_frequency,
+        user    => 'root',
       }
     }
   }

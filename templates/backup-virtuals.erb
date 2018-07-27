@@ -1,0 +1,171 @@
+#!/usr/bin/env bash
+################################################################################
+# Generates a backup of your Postfix virtual mail delivery directory and manages
+# optional archive GPG encryption and rotation.
+################################################################################
+_virtualDeliveryDir=${1:-<%=scope['postfix::virtual_delivery_dir']%>}
+_backupDirectory=${2:-<%=scope['postfix::backup_directory']%>}
+_backupRotate=${3:-<%=scope['postfix::backup_rotate']%>}
+_backupTarOpts=${4:-<%=scope['postfix::backup_tar_opts']%>}
+_backupGPGRecipient=${5:-<%=scope['postfix::backup_gpg_recipient']%>}
+_backupExecPath=${6:-<%=scope['postfix::backup_exec_path']%>}
+_backupTarPrefix="postfix-virtual-"
+_backupTarSuffix=tar
+_showFeedback=false
+export PATH=${_backupExecPath}:${PATH}
+
+# Provide INFO feedback only when running an interactive TTY (squelch cron)
+if [ -t 0 ]; then
+	_showFeedback=true
+fi
+
+# Logging output
+function logINFO {
+	if $_showFeedback; then
+		echo -e "$@"
+	fi
+}
+function logWARNING {
+	echo -e "WARNING:  $@" >&2
+}
+function logERROR {
+	echo -e "ERROR:  $@" >&2
+}
+
+# Strip create and file options from the tar options
+function stripArgs {
+	local sourceArgs=$1
+	local cleanArgs="$sourceArgs" stripArg argStripped
+
+	shift
+	for stripArg in $@; do
+		argStripped=false
+		if [[ $cleanArgs =~ ^(.*)${stripArg}[[:space:]]+[^-]+(.*)$ ]]; then
+			argStripped=true
+			cleanArgs="${BASH_REMATCH[1]}${BASH_REMATCH[2]}"
+		elif [[ $cleanArgs =~ ^(.*)${stripArg}(.*)$ ]]; then
+			argStripped=true
+			cleanArgs="${BASH_REMATCH[1]}${BASH_REMATCH[2]}"
+		fi
+
+		if $argStripped; then
+			logWARNING "Removed unsupported argument, ${stripArg}, from ${_backupTarOpts}."
+		fi
+	done
+
+	# Strip off any resulting leading whitespace
+	cleanArgs="${cleanArgs#"${cleanArgs%%[![:space:]]*}"}"
+
+	# The first character -- if any are left -- must be a hyphen
+	if [ 0 -lt ${#cleanArgs} ] && [[ ! $cleanArgs =~ ^-.*$ ]]; then
+		cleanArgs="-${cleanArgs}"
+	fi
+
+	echo "$cleanArgs"
+}
+_backupTarOpts=$(stripArgs "$_backupTarOpts" -c --create -x --extract --get \
+	--diff --compare --delete --list --test-label -f --file f)
+
+# Identify the compression-based extra suffix, based on:
+# https://en.wikipedia.org/wiki/List_of_archive_formats#Compression_only
+usingCompression=false
+if [[ $_backupTarOpts == *"j"* ]]; then
+	_backupTarSuffix+=.bz2
+	usingCompression=true
+elif [[ $_backupTarOpts == *"J"* ]]; then
+	_backupTarSuffix+=.xz
+	usingCompression=true
+elif [[ $_backupTarOpts == *"z"* ]]; then
+	_backupTarSuffix+=.gz
+	usingCompression=true
+elif [[ $_backupTarOpts == *"Z"* ]]; then
+	_backupTarSuffix+=.Z
+	usingCompression=true
+elif [[ $_backupTarOpts == *"--lzip"* ]]; then
+	_backupTarSuffix+=.lz
+	usingCompression=true
+elif [[ $_backupTarOpts == *"--lzma"* ]]; then
+	_backupTarSuffix+=.lzma
+	usingCompression=true
+elif [[ $_backupTarOpts == *"--lzop"* ]]; then
+	_backupTarSuffix+=.lzo
+	usingCompression=true
+fi
+
+# No further changes to configuration values
+readonly _virtualDeliveryDir _backupDirectory _backupFileGroup \
+	_backupFileUser _backupRotate _backupTarOpts _backupTarPrefix \
+	_backupTarSuffix _backupExecPath _showFeedback
+
+# The backup source and target directories must exist
+if [ ! -d "$_backupDirectory" ]; then
+	logERROR "Backup target directory does not exist:  ${_backupDirectory}"
+	exit 1
+fi
+if [ ! -d "$_virtualDeliveryDir" ]; then
+	logERROR "Backup source directory does not exist:  ${_virtualDeliveryDir}"
+	exit 2
+fi
+
+# Destroy any files that are being rotated out
+fileCount=$(ls -1 "${_backupDirectory}/${_backupTarPrefix}"* 2>/dev/null | wc -l)
+logINFO "Found ${fileCount} backup files matching ${_backupDirectory}/${_backupTarPrefix}*"
+if [ $fileCount -ge $_backupRotate ]; then
+	findMatching="${_backupTarPrefix}*"
+	fileRemovals=$((fileCount + 1 - _backupRotate))
+	logINFO "Removing ${fileRemovals} expired backup file(s):"
+	fileCount=0
+	while IFS= read -r -d '' backupFile; do
+		((fileCount++))
+		if [ $fileCount -ge $_backupRotate ]; then
+			logINFO "  * ${backupFile}"
+			if ! rm -f "$backupFile"; then
+				logWARNING "Unable to remove old backup file when running as $(whoami):  ${backupFile}"
+			fi
+		fi
+	done < <(find "$_backupDirectory" -maxdepth 1 -type f -name "${findMatching}" -printf '%T@ %p\0' | sort -zk 1nr | sed -z 's/^[^ ]* //')
+fi
+
+# Create a new backup
+tarBall="${_backupDirectory}/${_backupTarPrefix}$(date +%Y%m%d%H%M%S).${_backupTarSuffix}"
+logINFO "Tarring up ${_virtualDeliveryDir} into ${tarBall}..."
+if [ -z "$_backupGPGRecipient" ]; then
+	tar -c ${_backupTarOpts} \
+		-f "$tarBall" \
+		-C / \
+		"${_virtualDeliveryDir#*/}"
+else
+	tarBall+='.gpg'
+	tar -c ${_backupTarOpts} \
+		-C / \
+		"${_virtualDeliveryDir#*/}" \
+		| gpg -e \
+			-r "$_backupGPGRecipient" \
+			-o "$tarBall"
+fi
+tarState=$?
+
+# Add some more useful messaging around common mistakes
+if [ 0 -ne $tarState ]; then
+	# Delete the (likely) corrupt file
+	rm -f "$tarBall"
+
+	if $usingCompression; then
+		cat >&2 <<EOHELP
+
+The tar command reported an error code, ${tarState}, when you asked it to
+compress the backup file.  This most often occurs when the machine running the
+tar command does not have the requested compression program installed.  For
+example, when you instruct tar to use "z" compression, the program, "xz", must
+be found within your executable PATH.
+
+If you are certain that the required compression program is installed, then
+please add its executable path to backup_exec_path, which is presently:
+${PATH}
+
+EOHELP
+	fi
+fi
+
+# Exit with the original tar state
+exit $tarState
