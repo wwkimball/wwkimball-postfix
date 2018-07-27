@@ -183,7 +183,7 @@ postfix::backup_directory_group: root
 postfix::backup_directory_mode: '0700'
 postfix::backup_directory_owner: root
 postfix::backup_exec_path: /usr/local/sbin:/usr/local/bin/usr/sbin::/usr/bin:/sbin:/bin
-postfix::backup_rotate: 1825
+postfix::backup_rotate: 180
 postfix::manage_backup_directory: true
 
 # Do not specify:  -c --create -f --file -C --directory
