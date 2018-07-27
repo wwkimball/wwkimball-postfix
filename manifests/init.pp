@@ -157,6 +157,7 @@ class postfix(
     Pattern[/^-*[A-Za-z0-9_]+$/],
     Variant[String, Integer]
   ]                              $global_parameters,
+  Boolean                        $manage_backup_directory,
   Hash[
     Pattern[/^-*[a-z]+\/(inet|unix|fifo|pass)$/],
     Struct[{
